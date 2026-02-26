@@ -9,6 +9,7 @@ function lpm(y){return LI[y-1900]&0xf}
 function lpd(y){if(lpm(y))return(LI[y-1900]&0x10000)?30:29;return 0}
 function mmd(y,m){return(LI[y-1900]&(0x10000>>m))?30:29}
 function s2l(sy,sm,sd){let o=Math.floor((Date.UTC(sy,sm-1,sd)-Date.UTC(1900,0,31))/86400000),ly=1900,t;for(;ly<2101&&o>0;ly++){t=lyd(ly);o-=t}if(o<0){o+=t;ly--}let il=false,lm2=lpm(ly),lm=1;for(;lm<13&&o>0;lm++){if(lm2>0&&lm===lm2+1&&!il){--lm;il=true;t=lpd(ly)}else{t=mmd(ly,lm)}if(il&&lm===lm2+1)il=false;o-=t}if(o===0&&lm2>0&&lm===lm2+1){if(il)il=false;else{il=true;--lm}}if(o<0){o+=t;--lm}return{year:ly,month:lm,day:o+1}}
+function l2s(ly,lm,ld){let o=0;for(let yr=1900;yr<ly;yr++)o+=lyd(yr);const lm2=lpm(ly);let passed=false;for(let m=1;m<lm;m++){if(lm2>0&&m===lm2&&!passed){o+=lpd(ly);passed=true}o+=mmd(ly,m)}o+=ld-1;const d=new Date(Date.UTC(1900,0,31)+o*86400000);return{year:d.getUTCFullYear(),month:d.getUTCMonth()+1,day:d.getUTCDate()}}
 function hs(a,b,c,d){let h=((a*2654435761)^(b*2246822519)^(c*3266489917)^(d*668265263))>>>0;h=Math.imul(h^(h>>>16),0x45d9f3b);h=Math.imul(h^(h>>>16),0x45d9f3b);return((h^(h>>>16))>>>0)/4294967296}
 const ST=["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
 const BR=["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
@@ -30,7 +31,38 @@ const MTN=["磁性","月亮","電力","自我存在","超頻","韻律","共振",
 const MDS={"紅龍":{c:"滋養與誕生",d:"孕育新開始的力量",g:"信任生命會照顧你",pw:"原始信任",ch:"過度照顧而忽略自己"},"白風":{c:"溝通與靈感",d:"宇宙訊息的傳遞者",g:"真實的表達是你的力量",pw:"呼吸與靈感",ch:"散漫缺乏方向"},"藍夜":{c:"豐盛與夢境",d:"透過夢接收宇宙訊息",g:"相信你的夢想",pw:"豐盛顯化",ch:"過度沉浸幻想"},"黃種子":{c:"開花與目標",d:"每個決定都會綻放",g:"最美的花需要最長時間",pw:"耐心與信念",ch:"過度期待結果"},"紅蛇":{c:"生命力與本能",d:"強大的生存智慧",g:"信任你的身體直覺",pw:"生命力",ch:"恐懼與執著"},"白世界橋":{c:"連接與放下",d:"不同世界的橋樑",g:"放下才能得到",pw:"連結超越",ch:"害怕改變"},"藍手":{c:"療癒與知曉",d:"雙手擁有療癒能量",g:"用雙手去創造療癒",pw:"療癒之手",ch:"過度控制"},"黃星星":{c:"美與藝術",d:"感知宇宙的和諧",g:"把美帶入日常生活",pw:"藝術創造",ch:"追求完美"},"紅月":{c:"淨化與流動",d:"水般的療癒力",g:"讓情緒像水一樣流動",pw:"淨化療癒",ch:"情緒氾濫"},"白狗":{c:"愛與忠誠",d:"心輪特別強大",g:"先學會無條件愛自己",pw:"忠誠之愛",ch:"過度付出"},"藍猴":{c:"遊戲與幻象",d:"看穿表象的智慧",g:"別把人生看太嚴肅",pw:"幽默魔法",ch:"逃避責任"},"黃人":{c:"自由意志",d:"獨立思考的勇氣",g:"勇敢做自己的選擇",pw:"自由意志",ch:"過度自我"},"紅天行者":{c:"探索與空間",d:"靈魂渴望穿越時空",g:"保持好奇心",pw:"空間旅行",ch:"無法安定"},"白巫師":{c:"永恆與魔法",d:"穿透時間幻象",g:"活在當下就是永恆",pw:"超越時間",ch:"操控"},"藍鷹":{c:"視野與創造",d:"從高處俯瞰全局",g:"先看清全貌再行動",pw:"遠見",ch:"脫離現實"},"黃戰士":{c:"智勇與提問",d:"戰士般的求知慾",g:"勇敢質疑",pw:"無畏探索",ch:"過度好鬥"},"紅地球":{c:"同步與導航",d:"與地球深刻連結",g:"跟隨生命的徵兆",pw:"共時性",ch:"執著控制"},"白鏡":{c:"真相與無盡",d:"映照事物本質",g:"接受真相",pw:"清晰洞察",ch:"過度批判"},"藍風暴":{c:"轉化與自我生成",d:"改變的催化劑",g:"擁抱變化",pw:"徹底轉化",ch:"破壞性"},"黃太陽":{c:"生命與開悟",d:"太陽般的光明",g:"讓光自然照耀",pw:"開悟之光",ch:"自我中心"}};
 const MTD={"磁性":"統一吸引","月亮":"挑戰平衡","電力":"服務點亮","自我存在":"定義形式","超頻":"賦予力量","韻律":"組織平衡","共振":"連結通道","銀河":"整合完整","太陽":"意圖實現","行星":"完美顯化","光譜":"自由釋放","水晶":"合作凝聚","宇宙":"超越完成"};
 function getMayan(y,m,d){const diff=Math.floor((new Date(y,m-1,d)-new Date(2006,0,14))/864e5);const k=((diff%260)+260)%260;const seal=MSL[k%20],tone=MTN[k%13];return{seal,tone,kin:k+1,d:MDS[seal],td:MTD[tone],guide:MSL[(k%20+12)%20],anti:MSL[(k%20+10)%20],occ:MSL[(k%20+18)%20]}}
-function getBazi(y,m,d,h){const ysi=(y-4)%10,ybi=(y-4)%12,base=Math.floor((Date.UTC(y,m-1,d)-Date.UTC(1900,0,7))/864e5),dsi=((base%10)+10)%10;const WX=["木","木","火","火","土","土","金","金","水","水"],dm=WX[dsi],yEl=WX[ysi];const dd={"木":"你是一棵大樹，正直向上，仁慈包容。","火":"你是一團火焰，熱情開朗，照亮他人。","土":"你是一片大地，穩重踏實，承載萬物。","金":"你是一塊精鋼，意志堅定，果斷正義。","水":"你是一條河流，智慧靈動，適應萬變。"};const rel={"木":{"火":"木生火——你的仁慈點燃他人的熱情","土":"木剋土——你的成長需要打破現狀","金":"金剋木——外在壓力磨練你的韌性","水":"水生木——直覺和智慧滋養你的根源","木":"比肩——你身邊有同類型的夥伴"},"火":{"土":"火生土——你的熱情創造穩固基礎","金":"火剋金——你的光芒能融化一切阻礙","水":"水剋火——情緒管理是一生課題","木":"木生火——身邊善意持續點燃你","火":"比肩——你的能量場吸引同頻的人"},"土":{"金":"土生金——你的穩定孕育珍貴成果","水":"土剋水——你的務實穩住情緒波動","木":"木剋土——在壓力中學會成長","火":"火生土——熱情是你的養分","土":"比肩——穩定人際是你的力量"},"金":{"水":"金生水——你的果斷帶來智慧流動","木":"金剋木——你的銳利需要學會柔軟","火":"火剋金——過度壓力讓你脆弱","土":"土生金——穩固基礎是成功關鍵","金":"比肩——志同道合的夥伴很重要"},"水":{"木":"水生木——你的智慧滋養身邊人成長","火":"水剋火——你的冷靜平息衝突","土":"土剋水——過多框架限制你的流動","金":"金生水——邏輯幫助你更有方向","水":"比肩——你需要同樣深度的人"}};const s=hs(y,m,d,dsi);const sDesc=s>.6?"身強——內在能量充足，適合主動出擊。":s>.4?"中和——能量平衡，進退皆宜。":"身弱——需要外在支持，善用貴人的力量。";return{yg:ST[ysi]+BR[ybi],dm,dmEl:WX[dsi],desc:dd[dm],dsi,ysi,yEl,rel:rel[dm]?.[yEl]||"能量互動",sDesc}}
+function getBazi(y,m,d,h){const ysi=(y-4)%10,ybi=(y-4)%12,base=Math.floor((Date.UTC(y,m-1,d)-Date.UTC(1900,0,7))/864e5),dsi=((base%10)+10)%10;const WX=["木","木","火","火","土","土","金","金","水","水"],dm=WX[dsi],yEl=WX[ysi];
+  // Five element strengths based on pillars
+  const wx5={木:0,火:0,土:0,金:0,水:0};wx5[dm]+=35;wx5[yEl]+=25;
+  const mEl=WX[((ysi%5)*2+(m>1?m:m+12)-1)%10];wx5[mEl]+=20;
+  const hIdx=Math.floor(h/2)%5;const hEl=["木","火","土","金","水"][hIdx];wx5[hEl]+=20;
+  // Normalize
+  const mx=Math.max(...Object.values(wx5));Object.keys(wx5).forEach(k=>wx5[k]=Math.round(wx5[k]/mx*95));
+  // Weak element
+  const weak=Object.entries(wx5).sort((a,b)=>a[1]-b[1])[0][0];
+  const strong=Object.entries(wx5).sort((a,b)=>b[1]-a[1])[0][0];
+  // Shishen (十神) talents based on day stem vs other stems
+  const SS=["比肩","劫財","食神","傷官","偏財","正財","七殺","正官","偏印","正印"];
+  const getSS=(a,b)=>SS[((b-a)%10+10)%10];
+  const ss1=getSS(dsi,ysi),ss2=getSS(dsi,((ysi%5)*2+(m>1?m:m+12)-1)%10);
+  const talents=[];const ssSet=new Set([ss1,ss2]);
+  if(ssSet.has("傷官"))talents.push({name:"靈動的創作者",ss:"傷官",icon:"✦",desc:"你擁有打破常規的表達力與藝術直覺。在別人循規蹈矩時，你天生就能看見不同的風景。這份才華讓你在創作、設計、溝通方面有驚人的天賦。在愛情中，你渴望靈魂層面的共鳴，無法忍受一成不變的關係。"});
+  if(ssSet.has("七殺"))talents.push({name:"無畏的開創者",ss:"七殺",icon:"☩",desc:"你內在有一股不服輸的狠勁，面對困境時反而越挫越勇。這股能量讓你天生適合開創新局，在別人猶豫時你已經在行動。職場上你是天生的革命家，愛情中你被那些有稜有角、不隨波逐流的靈魂深深吸引。"});
+  if(ssSet.has("正印"))talents.push({name:"溫暖的守護者",ss:"正印",icon:"◈",desc:"你擁有海洋般的包容力，天生就是身邊人的安全港灣。你善於吸收知識，把複雜的事情消化後用最溫暖的方式傳遞出去。在職場上你是最好的導師和傾聽者，在愛情中你給予的安全感無可取代。"});
+  if(ssSet.has("食神"))talents.push({name:"自在的享樂家",ss:"食神",icon:"❋",desc:"你天生懂得生活的美好，擁有敏銳的感官天賦。無論是美食、音樂、還是大自然，你都能從中汲取能量。你的存在讓周圍的人感到放鬆和愉悅，這是一種渾然天成的療癒力。"});
+  if(ssSet.has("偏財"))talents.push({name:"靈活的冒險家",ss:"偏財",icon:"✧",desc:"你擁有敏銳的商業嗅覺和冒險精神。機會來臨時你能比別人更快嗅到，也更敢放手一搏。你的社交天賦讓你左右逢源，人脈就是你最大的財富。"});
+  if(ssSet.has("正官"))talents.push({name:"優雅的統率者",ss:"正官",icon:"♛",desc:"你散發著不怒自威的氣場，天生就讓人信服。你重視規則和秩序，但不是死板——而是用優雅的方式讓一切井然有序。你適合管理、領導、法律等需要公信力的領域。"});
+  if(ssSet.has("比肩"))talents.push({name:"堅毅的獨行者",ss:"比肩",icon:"▲",desc:"你擁有強大的自主意識和獨立精神。你不需要別人的認可來定義自己，靠自己的雙手打拼是你最大的驕傲。這份堅韌讓你在逆境中特別閃亮。"});
+  if(ssSet.has("劫財"))talents.push({name:"豪爽的行動派",ss:"劫財",icon:"◆",desc:"你果斷、慷慨、說做就做。你的行動力是你最大的武器，猶豫不是你的風格。在朋友圈中你總是最仗義的那一個。"});
+  if(ssSet.has("正財"))talents.push({name:"穩健的經營者",ss:"正財",icon:"◇",desc:"你天生具備守護和累積的能力。你做事踏實有條理，不追求一夜暴富，但你建立的一切都經得起時間考驗。你是家庭和團隊最可靠的支柱。"});
+  if(ssSet.has("偏印"))talents.push({name:"神祕的洞察者",ss:"偏印",icon:"☽",desc:"你的思維方式跟多數人不同，你能看見別人看不見的真相。這份獨特的洞察力讓你在研究、玄學、創新領域有過人的天賦。你的直覺往往精準得令人驚訝。"});
+  if(talents.length===0)talents.push({name:"溫暖的守護者",ss:"正印",icon:"◈",desc:"你擁有海洋般的包容力，天生就是身邊人的安全港灣。你善於吸收知識，把複雜的事情消化後用最溫暖的方式傳遞出去。"});
+  // Year fortune
+  const cyear=new Date().getFullYear();const lysi=(cyear-4)%10;const lySS=getSS(dsi,lysi);
+  const fortuneKW={"比肩":"自我突破","劫財":"果斷行動","食神":"享受當下","傷官":"創意表達","偏財":"大膽嘗試","正財":"穩健累積","七殺":"勇敢蛻變","正官":"承擔責任","偏印":"深度學習","正印":"回歸初心"}[lySS]||"蓄勢待發";
+  const s=hs(y,m,d,dsi);const sDesc=s>.6?"身強——內在能量充足，適合主動出擊。":s>.4?"中和——能量平衡，進退皆宜。":"身弱——需要外在支持，善用貴人的力量。";
+  const rel={"木":{"火":"木生火——你的仁慈點燃他人的熱情","土":"木剋土——你的成長需要打破現狀","金":"金剋木——外在壓力磨練你的韌性","水":"水生木——直覺和智慧滋養你的根源","木":"比肩——你身邊有同類型的夥伴"},"火":{"土":"火生土——你的熱情創造穩固基礎","金":"火剋金——你的光芒能融化一切阻礙","水":"水剋火——情緒管理是一生課題","木":"木生火——身邊善意持續點燃你","火":"比肩——你的能量場吸引同頻的人"},"土":{"金":"土生金——你的穩定孕育珍貴成果","水":"土剋水——你的務實穩住情緒波動","木":"木剋土——在壓力中學會成長","火":"火生土——熱情是你的養分","土":"比肩——穩定人際是你的力量"},"金":{"水":"金生水——你的果斷帶來智慧流動","木":"金剋木——你的銳利需要學會柔軟","火":"火剋金——過度壓力讓你脆弱","土":"土生金——穩固基礎是成功關鍵","金":"比肩——志同道合的夥伴很重要"},"水":{"木":"水生木——你的智慧滋養身邊人成長","火":"水剋火——你的冷靜平息衝突","土":"土剋水——過多框架限制你的流動","金":"金生水——邏輯幫助你更有方向","水":"比肩——你需要同樣深度的人"}};
+  return{yg:ST[ysi]+BR[ybi],dm,dmEl:WX[dsi],desc:"",dsi,ysi,yEl,rel:rel[dm]?.[yEl]||"能量互動",sDesc,wx5,weak,strong,talents:talents.slice(0,3),fortuneKW,lySS,s}}
 
 // ═══════════════════════════════════════
 // ZIWEI ENGINE + K-LINE
@@ -115,7 +147,7 @@ function Stars(){
 }
 
 function Glass({children,style,...p}){
-  return <div style={{background:"rgba(25,22,50,0.55)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderRadius:16,border:`1px solid ${C.bdr}`,padding:24,boxShadow:"0 8px 32px rgba(0,0,0,.3)",position:"relative",overflow:"hidden",...style}} {...p}>
+  return <div style={{background:"rgba(25,22,50,0.55)",backdropFilter:"blur(16px)",WebkitBackdropFilter:"blur(16px)",borderRadius:16,border:`1px solid ${C.bdr}`,padding:24,boxShadow:"0 8px 32px rgba(0,0,0,.3)",position:"relative",...style}} {...p}>
     <div style={{position:"absolute",top:0,left:0,right:0,height:1,background:`linear-gradient(90deg,transparent,${C.gold}33,transparent)`}}/>
     {children}
   </div>;
@@ -370,12 +402,87 @@ function Jiaobei(){
 // ═══════════════════════════════════════
 // MAIN APP
 // ═══════════════════════════════════════
+const TT=({term,def,children,setTtip})=>{const ref=useRef(null);return (<span ref={ref} style={{display:"inline"}}><span style={{borderBottom:`1px dashed ${C.gold}55`,cursor:"help"}} onClick={()=>{if(ref.current){const r=ref.current.getBoundingClientRect();setTtip({term,def,top:r.bottom+8,left:Math.max(12,Math.min(r.left+r.width/2-120,window.innerWidth-252))})}}}>{children||term}<span style={{display:"inline-block",width:14,height:14,borderRadius:7,background:`${C.gold}15`,border:`1px solid ${C.gold}33`,fontSize:".55rem",lineHeight:"13px",textAlign:"center",color:C.gold,marginLeft:3,verticalAlign:"middle",cursor:"help"}}>?</span></span></span>)};
+
+/* ── TAROT CARD DRAW COMPONENT ── */
+const TarotDraw=({phase,card,onDraw,onRedraw})=>{
+  /* phase: "idle" | "shuffle" | "draw" | "flip" | "reveal" */
+  const cardW=90,cardH=140,stackN=5;
+  const cardBack=(x,y,r,z,anim)=>(<div key={`b${z}`} style={{position:"absolute",left:"50%",top:"50%",width:cardW,height:cardH,marginLeft:-cardW/2+x,marginTop:-cardH/2+y,borderRadius:10,background:"linear-gradient(145deg,#2a1f3d,#1a1230)",border:"1.5px solid rgba(180,130,180,.3)",boxShadow:"0 4px 20px rgba(0,0,0,.5),inset 0 0 30px rgba(180,130,180,.05)",transform:`rotate(${r}deg)`,zIndex:z,transition:anim||"all .6s cubic-bezier(.23,1,.32,1)",display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden"}}>
+    <div style={{position:"absolute",inset:6,borderRadius:6,border:"1px solid rgba(180,130,180,.15)"}}/>
+    <div style={{fontSize:"1.6rem",color:"rgba(180,130,180,.25)",textShadow:"0 0 10px rgba(180,130,180,.15)"}}>☽</div>
+    <div style={{position:"absolute",top:8,left:8,fontSize:".5rem",color:"rgba(180,130,180,.2)"}}>✦</div>
+    <div style={{position:"absolute",bottom:8,right:8,fontSize:".5rem",color:"rgba(180,130,180,.2)"}}>✦</div>
+  </div>);
+  if(phase==="idle")return(<div onClick={onDraw} style={{cursor:"pointer",position:"relative",height:200,display:"flex",alignItems:"center",justifyContent:"center"}}>
+    {Array.from({length:stackN},(_,i)=>cardBack(i*2-4,-i*1.5,(i-2)*1.2,i))}
+    <div style={{position:"absolute",bottom:0,fontSize:".78rem",color:"rgba(180,130,180,.5)",letterSpacing:".1em"}}>輕觸牌堆，抽取今日指引</div>
+  </div>);
+  if(phase==="shuffle")return(<div style={{position:"relative",height:200,display:"flex",alignItems:"center",justifyContent:"center"}}>
+    {Array.from({length:stackN},(_,i)=>(<div key={`s${i}`} style={{position:"absolute",left:"50%",top:"50%",width:cardW,height:cardH,marginLeft:-cardW/2,marginTop:-cardH/2,borderRadius:10,background:"linear-gradient(145deg,#2a1f3d,#1a1230)",border:"1.5px solid rgba(180,130,180,.3)",boxShadow:"0 4px 20px rgba(0,0,0,.5),inset 0 0 30px rgba(180,130,180,.05)",zIndex:i,display:"flex",alignItems:"center",justifyContent:"center",overflow:"hidden",animation:`cardShuffle .5s ${i*.1}s ease-in-out infinite alternate`}}>
+      <div style={{position:"absolute",inset:6,borderRadius:6,border:"1px solid rgba(180,130,180,.15)"}}/>
+      <div style={{fontSize:"1.6rem",color:"rgba(180,130,180,.25)",textShadow:"0 0 10px rgba(180,130,180,.15)"}}>☽</div>
+    </div>))}
+    <div style={{position:"absolute",bottom:0,fontSize:".78rem",color:"rgba(180,130,180,.5)",animation:"pulse 1.2s ease-in-out infinite"}}>在心中默念你的問題⋯⋯</div>
+  </div>);
+  if(phase==="draw")return(<div style={{position:"relative",height:240,display:"flex",alignItems:"center",justifyContent:"center"}}>
+    {Array.from({length:stackN-1},(_,i)=>cardBack(i*1.5-2,-i*1,i*0.5,i))}
+    <div style={{position:"absolute",left:"50%",top:"50%",width:cardW,height:cardH,marginLeft:-cardW/2,marginTop:-cardH/2-50,borderRadius:10,background:"linear-gradient(145deg,#2a1f3d,#1a1230)",border:"1.5px solid rgba(180,130,180,.5)",boxShadow:"0 8px 40px rgba(180,130,180,.2),0 0 60px rgba(180,130,180,.1)",zIndex:10,display:"flex",alignItems:"center",justifyContent:"center",animation:"cardLift .8s ease-out forwards"}}>
+      <div style={{position:"absolute",inset:6,borderRadius:6,border:"1px solid rgba(180,130,180,.2)"}}/>
+      <div style={{fontSize:"1.6rem",color:"rgba(180,130,180,.4)",textShadow:"0 0 15px rgba(180,130,180,.3)"}}>☽</div>
+    </div>
+  </div>);
+  if(phase==="flip"||phase==="reveal")return(<div style={{position:"relative",height:280,display:"flex",alignItems:"center",justifyContent:"center",perspective:800}}>
+    <div style={{width:cardW+30,height:cardH+40,position:"relative",transformStyle:"preserve-3d",animation:phase==="flip"?"cardFlip .8s ease-in-out forwards":"none",transform:phase==="reveal"?"rotateY(180deg)":"rotateY(0)"}}>
+      {/* Back face */}
+      <div style={{position:"absolute",inset:0,backfaceVisibility:"hidden",borderRadius:12,background:"linear-gradient(145deg,#2a1f3d,#1a1230)",border:"1.5px solid rgba(180,130,180,.4)",boxShadow:"0 8px 40px rgba(180,130,180,.15)",display:"flex",alignItems:"center",justifyContent:"center"}}>
+        <div style={{fontSize:"2rem",color:"rgba(180,130,180,.3)"}}>☽</div>
+      </div>
+      {/* Front face */}
+      <div style={{position:"absolute",inset:0,backfaceVisibility:"hidden",transform:"rotateY(180deg)",borderRadius:12,background:"linear-gradient(160deg,rgba(30,22,50,.95),rgba(20,15,35,.98))",border:"1.5px solid rgba(212,165,116,.35)",boxShadow:"0 8px 40px rgba(212,165,116,.15),0 0 80px rgba(180,130,180,.08)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:12}}>
+        <div style={{fontSize:"1.5rem",color:C.purp,textShadow:"0 0 20px rgba(180,130,180,.4)",marginBottom:4}}>{card?.img}</div>
+        <div style={{fontSize:".82rem",fontWeight:700,color:C.gold,letterSpacing:".08em"}}>{card?.n}</div>
+        <div style={{margin:"6px 0",width:"60%",height:1,background:"linear-gradient(90deg,transparent,rgba(212,165,116,.3),transparent)"}}/>
+        <div style={{fontSize:".6rem",color:"rgba(180,130,180,.6)"}}>{card?.k}</div>
+      </div>
+    </div>
+  </div>);
+  return null;
+};
+
+/* ── I CHING DRAW COMPONENT ── */
+const IChingDraw=({phase,hex,onDraw,onRedraw})=>{
+  const coinStyle=(i,spinning)=>({width:36,height:36,borderRadius:18,background:spinning?"linear-gradient(135deg,rgba(130,180,200,.15),rgba(160,200,160,.1))":"rgba(130,180,200,.08)",border:"1.5px solid rgba(130,180,200,.25)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:".7rem",color:C.blue,fontWeight:700,animation:spinning?`coinSpin .4s ${i*.15}s ease-in-out infinite alternate`:"none",boxShadow:spinning?"0 0 20px rgba(130,180,200,.15)":"none",transition:"all .3s"});
+  if(phase==="idle")return(<div onClick={onDraw} style={{cursor:"pointer",textAlign:"center",padding:"20px 0"}}>
+    <div style={{display:"flex",justifyContent:"center",gap:14,marginBottom:16}}>
+      {[0,1,2].map(i=><div key={i} style={coinStyle(i,false)}>☰</div>)}
+    </div>
+    <div style={{fontSize:".78rem",color:"rgba(130,180,200,.5)",letterSpacing:".1em"}}>擲出三枚銅錢，卜問天機</div>
+  </div>);
+  if(phase==="toss")return(<div style={{textAlign:"center",padding:"20px 0"}}>
+    <div style={{display:"flex",justifyContent:"center",gap:14,marginBottom:16}}>
+      {[0,1,2].map(i=><div key={i} style={coinStyle(i,true)}>☰</div>)}
+    </div>
+    <div style={{fontSize:".78rem",color:"rgba(130,180,200,.5)",animation:"pulse 1.2s ease-in-out infinite"}}>銅錢翻轉中⋯⋯靜心感受</div>
+  </div>);
+  if(phase==="reveal")return(<div style={{textAlign:"center",padding:"20px 0"}}>
+    <div style={{display:"inline-block",padding:"24px 36px",borderRadius:16,background:"rgba(130,180,200,.05)",border:"1px solid rgba(130,180,200,.15)",animation:"fadeUp .8s ease-out"}}>
+      <div style={{fontSize:"3.5rem",color:C.blue,textShadow:"0 0 30px rgba(130,180,200,.3),0 0 60px rgba(130,180,200,.1)",marginBottom:8,fontFamily:"serif",letterSpacing:".2em"}}>{hex?.n}</div>
+      <div style={{fontSize:".82rem",color:"rgba(255,255,255,.45)",letterSpacing:".15em"}}>{hex?.t}</div>
+    </div>
+  </div>);
+  return null;
+};
 export default function App(){
   const[page,setPage]=useState("input"); // input, home, ziwei, bazi, zodiac, lifepath, humandesign, mayan, fortune
   const[bY,sBY]=useState(1996),[bM,sBM]=useState(3),[bD,sBD]=useState(15),[bH,sBH]=useState(8);
   const[gen,sGen]=useState("female"),[cal,sCal]=useState("solar");
   const[anim,sAnim]=useState(false);
   const[soul,setSoul]=useState(null); // all computed data
+  const[ttip,setTtip]=useState(null);
+  const[tarotCard,setTarotCard]=useState(null);const[tarotPhase,setTarotPhase]=useState("idle");
+  const[ichingHex,setIchingHex]=useState(null);const[ichingPhase,setIchingPhase]=useState("idle");
+  const[overlay,setOverlay]=useState(null); // null | "tarot" | "iching" | "fortune"
   const[dim,sDim]=useState("總運"),[tm,sTm]=useState("一生");
   const[cw,sCw]=useState(800);
   const cr=useRef(null);
@@ -385,11 +492,15 @@ export default function App(){
     sAnim(true);
     setTimeout(()=>{
       const isLunar=cal==="lunar";
-      const zodiac=isLunar?"水瓶座":getZodiac(bM,bD); // lunar users get approximate
-      const lp=getLP(bY,bM,bD);
-      const hd=getHD(bY,bM,bD,bH);
-      const mayan=getMayan(bY,bM,bD);
-      const bazi=getBazi(bY,bM,bD,bH);
+      // Solar dates (for zodiac, mayan, lifepath)
+      const solar=isLunar?l2s(bY,bM,bD):{year:bY,month:bM,day:bD};
+      // Lunar dates (for bazi, ziwei)
+      const lunar=isLunar?{year:bY,month:bM,day:bD}:s2l(bY,bM,bD);
+      const zodiac=getZodiac(solar.month,solar.day);
+      const lp=getLP(solar.year,solar.month,solar.day);
+      const hd=getHD(solar.year,solar.month,solar.day,bH);
+      const mayan=getMayan(solar.year,solar.month,solar.day);
+      const bazi=getBazi(lunar.year,lunar.month,lunar.day,bH);
       const ziwei=genChart(bY,bM,bD,bH,isLunar);
       const syn=synthesize(zodiac,lp,hd,mayan,bazi,ziwei);
       setSoul({zodiac,lp,hd,mayan,bazi,ziwei,syn,lpd:LPD[lp]||LPD[1]});
@@ -402,29 +513,104 @@ export default function App(){
   const peak=ltd?.pi>=0?ltd.data[ltd.pi]:null;
   const avg=useMemo(()=>{const d=ltd?.data||sd;if(!d?.length)return 0;return Math.round(d.reduce((a,c)=>a+c.close,0)/d.length)},[ltd,sd]);
 
-  const PB=({icon,title})=><div onClick={()=>setPage("home")} style={{display:"inline-flex",alignItems:"center",gap:6,cursor:"pointer",marginBottom:14,padding:"6px 14px 6px 8px",borderRadius:20,background:"rgba(255,255,255,.03)",border:`1px solid ${C.bdr}`,fontSize:".76rem",color:C.txt2,transition:"all .2s"}}><span style={{fontSize:".65rem",opacity:.5}}>←</span><span style={{fontSize:"1rem"}}>{icon}</span><span>{title}</span></div>;
+  const PB=({icon,title})=><div onClick={()=>setPage(soul?"home":"input")} style={{display:"inline-flex",alignItems:"center",gap:6,cursor:"pointer",marginBottom:14,padding:"6px 14px 6px 8px",borderRadius:20,background:"rgba(255,255,255,.03)",border:`1px solid ${C.bdr}`,fontSize:".76rem",color:C.txt2,transition:"all .2s"}}><span style={{fontSize:".65rem",opacity:.5}}>←</span><span style={{fontSize:"1rem"}}>{icon}</span><span>{title}</span></div>;
+
+  /* ── TAROT DECK (Major Arcana, all positive reframes) ── */
+  const TAROT=[
+    {n:"愚者",k:"無限可能",img:"0",d:"宇宙正在邀請你放下包袱，帶著赤子之心踏入未知。此刻的「不確定」不是危險，而是生命送給你的最美禮物——自由。信任直覺，那條沒有人走過的路，正為你而開。"},
+    {n:"魔術師",k:"心想事成",img:"I",d:"你已經擁有實現願望的一切資源，只是還沒意識到。宇宙提醒你：此刻的你比你以為的更有力量。勇敢地把想法付諸行動吧，天時地利人和正在向你匯聚。"},
+    {n:"女祭司",k:"直覺覺醒",img:"II",d:"答案不在外面，而在你的內心深處。今天適合安靜下來，聆聽那個細微的內在聲音。你的直覺正在對你低語，那些似曾相識的感覺、突如其來的靈感，都是宇宙給你的密碼。"},
+    {n:"皇后",k:"豐盛綻放",img:"III",d:"生命的豐盛正在向你流動。無論是愛情、創造力還是物質層面，你正處於一個豐收的能量場中。允許自己接受美好，你值得擁有一切溫柔的事物。"},
+    {n:"皇帝",k:"掌握全局",img:"IV",d:"你的內在領袖正在甦醒。此刻的你擁有做出重大決定的智慧和勇氣。宇宙信任你的判斷——站穩腳步，用你的遠見為自己和身邊的人創造穩定的未來。"},
+    {n:"教皇",k:"靈性傳承",img:"V",d:"一位重要的導師或一段深刻的智慧正在向你走來。保持謙遜和開放，生命中最珍貴的教導往往來自意想不到的地方。今天適合學習、閱讀，或向信任的人請教。"},
+    {n:"戀人",k:"靈魂共鳴",img:"VI",d:"一段重要的連結正在深化——可能是愛情，也可能是你與自己內心的和解。宇宙提醒你：真正的愛不是依賴，而是兩個完整靈魂的共振。傾聽你的心，它知道答案。"},
+    {n:"戰車",k:"勢如破竹",img:"VII",d:"你積蓄已久的能量即將爆發。所有的準備、等待和忍耐，都在為這一刻鋪路。宇宙說：全速前進吧！障礙會在你的決心面前自動讓路。"},
+    {n:"力量",k:"柔中帶剛",img:"VIII",d:"真正的力量不是征服，而是溫柔地擁抱自己的脆弱。你正在學會一種更深層的勇敢——承認恐懼，然後帶著恐懼繼續前行。這份溫柔的堅定，是宇宙給你最大的祝福。"},
+    {n:"隱者",k:"內在探索",img:"IX",d:"宇宙邀請你暫時從喧囂中抽身，與自己獨處。這不是孤獨，而是一段珍貴的自我對話時光。在安靜中，你會聽見那些被日常噪音淹沒的內在智慧。"},
+    {n:"命運之輪",k:"轉運時刻",img:"X",d:"生命的巨輪正在轉動，一個全新的循環即將開始。過去的停滯和困頓正在瓦解，新的機遇正從地平線升起。順應這股流動吧——宇宙正在為你重新洗牌。"},
+    {n:"正義",k:"因果平衡",img:"XI",d:"你過去種下的善因正在結果。宇宙的天秤正在向你傾斜——那些你以為沒有回報的付出、被忽略的善意，現在都將以意想不到的方式回到你身邊。"},
+    {n:"倒吊人",k:"全新視角",img:"XII",d:"試著用完全不同的角度看待眼前的處境。那些看似困境的事情，換個角度可能是最大的禮物。宇宙說：放棄掙扎，讓自己懸浮在未知中，答案會自己浮現。"},
+    {n:"死神",k:"華麗蛻變",img:"XIII",d:"一個舊的篇章正在溫柔地落幕，為更美好的新故事騰出空間。蛻變的過程也許不太舒適，但蝴蝶破繭而出的瞬間，就是你最耀眼的時刻。放手，讓新生發生。"},
+    {n:"節制",k:"和諧之道",img:"XIV",d:"你的內在正在尋找一個完美的平衡點。不急不緩、不多不少——宇宙提醒你，最優雅的生活方式是「恰到好處」。今天適合調和你生活中的各個面向，讓一切回歸和諧。"},
+    {n:"高塔",k:"破繭重生",img:"XV",d:"一道閃電正在照亮被你忽略的真相。這不是毀滅，而是宇宙在幫你移除那些不再服務你的舊有框架。當人造的高塔倒塌，你才能看見真正的天空有多遼闊。"},
+    {n:"星星",k:"希望之光",img:"XVII",d:"最黑暗的夜空中，星星正在為你閃爍。宇宙要你知道：無論你經歷了什麼，希望從未離開。你的願望正在被聽見，保持信心，美好的事物正在趕來的路上。"},
+    {n:"月亮",k:"潛意識覺醒",img:"XVIII",d:"夢境、直覺、似曾相識的感覺——你的潛意識正在傳遞重要的訊息。今天特別適合記錄你的夢、留意那些「巧合」。月光下，真相會以最溫柔的方式向你揭示。"},
+    {n:"太陽",k:"光芒萬丈",img:"XIX",d:"金色的能量正在環繞著你！這是一張充滿喜悅和成功的牌。無論你正在經歷什麼，宇宙要你知道：陽光已經穿透烏雲。敞開心扉，接受這份溫暖的擁抱吧。"},
+    {n:"審判",k:"靈魂召喚",img:"XX",d:"你的靈魂正在呼喚你回歸真實的自己。那個你一直壓抑的夢想、推遲的決定，現在是時候了。宇宙的號角已經響起——勇敢回應你內心最深處的召喚。"},
+    {n:"世界",k:"圓滿完成",img:"XXI",d:"恭喜你！你正站在一個完整循環的終點，也是新旅程的起點。你付出的一切努力都在此刻匯聚成圓滿。深深地感謝自己走過的每一步，然後帶著祝福，踏入下一個精彩篇章。"}
+  ];
+  /* ── I CHING HEXAGRAMS (simplified 8-trigram draw, positive reframes) ── */
+  const ICHING=[
+    {n:"乾",t:"天行健",k:"剛健不息",d:"宇宙以最強大的能量支持著你。此刻的你如同龍躍九天，內在的力量正等待釋放。不必壓抑自己的雄心壯志——你值得更廣闊的舞台。行動吧，天道酬勤。"},
+    {n:"坤",t:"地勢坤",k:"厚德載物",d:"大地的智慧在提醒你：最偉大的力量是包容。此刻適合收斂鋒芒，用溫柔和耐心去承接生命中的一切。你不需要爭先，因為大地從不急躁，卻承載萬物。"},
+    {n:"震",t:"雷出地奮",k:"破局新生",d:"沉寂已久的能量即將以雷霆之勢爆發。不要害怕突如其來的變化——那是宇宙在幫你打破僵局。震動過後，一切都會煥然一新。把恐懼轉化為興奮吧。"},
+    {n:"巽",t:"風行天下",k:"柔順漸進",d:"如風一般溫柔而持續地前進。此刻不適合強攻，而是用柔軟的姿態滲透。水滴石穿、春風化雨——你的影響力正在以最溫柔的方式擴散開來。"},
+    {n:"坎",t:"水流不息",k:"向內沉澱",d:"宇宙邀請你進入一段向內探索的旅程。如同水流入深谷，此刻適合沉澱、反思、傾聽內心。這不是困境，而是生命賜予你的靜修期。在最深的水底，往往藏著最珍貴的寶藏。"},
+    {n:"離",t:"明照四方",k:"光明綻放",d:"你的內在之火正在明亮地燃燒。此刻適合展現自己、表達想法、創造作品。你的光芒不是為了炫耀，而是為了照亮——照亮自己的路，也溫暖身邊的人。"},
+    {n:"艮",t:"山止則止",k:"靜觀其變",d:"智慧的暫停比盲目的前進更有力量。宇宙說：停下腳步，站在山巔俯瞰全局。此刻的等待不是消極，而是在積蓄能量，等待最佳時機一躍而起。"},
+    {n:"兌",t:"澤潤萬物",k:"喜悅分享",d:"快樂和豐盛正在向你匯聚。此刻適合與人分享你的喜悅、你的知識、你的溫暖。當你敞開心扉給予，宇宙會以更大的豐盛回饋你。微笑是你最強大的魔法。"}
+  ];
+  const openTarot=()=>{setOverlay("tarot");if(tarotPhase==="idle")drawTarot();};
+  const openIChing=()=>{setOverlay("iching");if(ichingPhase==="idle")drawIChing();};
+  const openFortune=()=>{setOverlay(null);setPage("fortune");};
+  const drawTarot=()=>{if(tarotPhase!=="idle"&&tarotPhase!=="reveal")return;setTarotCard(null);setTarotPhase("shuffle");setTimeout(()=>setTarotPhase("draw"),1800);setTimeout(()=>{const c=TAROT[Math.floor(Math.random()*TAROT.length)];setTarotCard(c);setTarotPhase("flip");},2600);setTimeout(()=>setTarotPhase("reveal"),3400);};
+  const drawIChing=()=>{if(ichingPhase!=="idle"&&ichingPhase!=="reveal")return;setIchingHex(null);setIchingPhase("toss");setTimeout(()=>{const h=ICHING[Math.floor(Math.random()*ICHING.length)];setIchingHex(h);setIchingPhase("reveal");},2600);};
 
   const navCards=[
     {id:"ziwei",icon:"📈",title:"紫微走勢",sub:"用K線看你的一生運勢起伏"},
     {id:"zodiac",icon:"✨",title:"星座解析",sub:`${soul?.zodiac||""}的深度剖析`},
-    {id:"lifepath",icon:"🔮",title:"生命靈數",sub:`靈數${soul?.lp||""}號的靈魂密碼`},
+    {id:"lifepath",icon:"☽",title:"生命靈數",sub:`靈數${soul?.lp||""}號的靈魂密碼`},
     {id:"humandesign",icon:"⚡",title:"人類圖",sub:`你的能量類型與策略`},
     {id:"mayan",icon:"🌀",title:"瑪雅曆",sub:`你的星系印記`},
     {id:"bazi",icon:"🎋",title:"八字命理",sub:`日主五行解讀`},
     {id:"fortune",icon:"🏮",title:"線上擲筊求籤",sub:"行天宮籤詩指引"},
   ];
 
+  /* ═══ FULLSCREEN OVERLAY ═══ */
+  if(overlay==="tarot"||overlay==="iching"){
+    const isTarot=overlay==="tarot";
+    const ph=isTarot?tarotPhase:ichingPhase;
+    const closeOverlay=()=>{setOverlay(null);if(isTarot)setTarotPhase("idle");else setIchingPhase("idle");};
+    return(<div style={{position:"fixed",inset:0,zIndex:9999,background:`radial-gradient(ellipse at 50% 30%,${isTarot?"rgba(180,130,180,.12)":"rgba(130,180,200,.12)"},transparent 60%),rgba(8,6,18,.97)`,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt,padding:20,overflow:"auto"}}>
+      <Stars/>
+      {/* Close button */}
+      <div onClick={closeOverlay} style={{position:"absolute",top:16,right:20,cursor:"pointer",fontSize:"1.2rem",color:"rgba(255,255,255,.3)",zIndex:10,width:36,height:36,borderRadius:18,background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.08)",display:"flex",alignItems:"center",justifyContent:"center",transition:"all .3s"}}>✕</div>
+      {/* Title */}
+      <div style={{position:"relative",zIndex:1,textAlign:"center",marginBottom:24}}>
+        <div style={{fontSize:".72rem",color:isTarot?"rgba(180,130,180,.5)":"rgba(130,180,200,.5)",letterSpacing:".25em",marginBottom:6}}>{isTarot?"✦ DAILY TAROT ✦":"◎ I CHING ◎"}</div>
+        <div style={{fontSize:"1.2rem",fontWeight:700,color:"rgba(255,255,255,.85)",letterSpacing:".1em"}}>{isTarot?"每日專屬塔羅":"易經禪卦"}</div>
+      </div>
+      {/* Animation Area */}
+      <div style={{position:"relative",zIndex:1,width:"100%",maxWidth:400}}>
+        {isTarot?<TarotDraw phase={tarotPhase} card={tarotCard} onDraw={drawTarot}/>:<IChingDraw phase={ichingPhase} hex={ichingHex} onDraw={drawIChing}/>}
+        {/* Result text */}
+        {ph==="reveal"&&(isTarot?tarotCard:ichingHex)&&<div style={{marginTop:16,animation:"fadeUp .6s ease-out"}}>
+          <div style={{textAlign:"center",marginBottom:12}}>
+            {isTarot&&<div style={{fontSize:"1.15rem",fontWeight:700,color:C.purp,marginBottom:6}}>{tarotCard.n}</div>}
+            <div style={{display:"inline-block",padding:"5px 18px",borderRadius:16,background:isTarot?"rgba(180,130,180,.1)":"rgba(130,180,200,.1)",border:`1px solid ${isTarot?"rgba(180,130,180,.2)":"rgba(130,180,200,.2)"}`,fontSize:".8rem",color:isTarot?C.purp:C.blue}}>{isTarot?tarotCard.k:ichingHex.k}</div>
+          </div>
+          <div style={{fontSize:".95rem",lineHeight:2.2,color:"rgba(255,255,255,.85)",textAlign:"center",maxWidth:360,margin:"0 auto"}}>{isTarot?tarotCard.d:ichingHex.d}</div>
+          <div style={{textAlign:"center",marginTop:24,display:"flex",gap:14,justifyContent:"center"}}>
+            <span onClick={()=>{if(isTarot){setTarotPhase("idle");setTimeout(drawTarot,100)}else{setIchingPhase("idle");setTimeout(drawIChing,100)}}} style={{cursor:"pointer",padding:"8px 22px",borderRadius:20,background:isTarot?"rgba(180,130,180,.1)":"rgba(130,180,200,.1)",border:`1px solid ${isTarot?"rgba(180,130,180,.2)":"rgba(130,180,200,.2)"}`,fontSize:".82rem",color:isTarot?C.purp:C.blue,transition:"all .3s"}}>{isTarot?"再抽一張":"再卜一卦"}</span>
+            <span onClick={closeOverlay} style={{cursor:"pointer",padding:"8px 22px",borderRadius:20,background:"rgba(255,255,255,.03)",border:"1px solid rgba(255,255,255,.08)",fontSize:".82rem",color:"rgba(255,255,255,.4)",transition:"all .3s"}}>返回</span>
+          </div>
+        </div>}
+      </div>
+      <style>{CSS}</style>
+    </div>);
+  }
   // ── INPUT PAGE ──
   if(page==="input"){
-    return(<div style={{minHeight:"100vh",background:`radial-gradient(ellipse at 30% 20%,rgba(140,120,200,.08),transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(212,165,116,.05),transparent 50%),${C.bg}`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt,padding:20}}>
-      <Stars/>
+    return(<div style={{minHeight:"100vh",background:`radial-gradient(ellipse at 30% 20%,rgba(140,120,200,.08),transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(212,165,116,.05),transparent 50%),${C.bg}`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt,padding:20}}><Stars/>
       <div style={{position:"relative",zIndex:1,width:"100%",maxWidth:520}}>
-        <div style={{textAlign:"center",marginBottom:28}}>
+        {/* HERO */}
+        <div style={{textAlign:"center",marginBottom:24}}>
           <div style={{fontSize:"clamp(2rem,6vw,3rem)",fontWeight:900,letterSpacing:".15em",background:`linear-gradient(135deg,${C.gold},${C.rose},${C.purp})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>靈魂藍圖</div>
           <div style={{fontSize:".78rem",color:C.txt2,letterSpacing:".3em",marginTop:4}}>SOUL BLUEPRINT</div>
           <div style={{margin:"16px auto",width:"60%",height:1,background:`linear-gradient(90deg,transparent,${C.gold}44,transparent)`}}/>
-          <div style={{fontSize:".8rem",color:C.txt2,lineHeight:1.8}}>融合六大命理系統，解鎖專屬於你的靈魂印記</div>
+          <div style={{fontSize:".82rem",color:C.txt2,lineHeight:1.8}}>融合六大命理系統，解鎖專屬於你的靈魂印記</div>
         </div>
+        {/* SOUL FORM */}
         <Glass>
           <div style={{display:"flex",justifyContent:"center",gap:6,marginBottom:16}}>
             {[["solar","陽曆"],["lunar","農曆"]].map(([v,l])=><button key={v} onClick={()=>sCal(v)} style={{padding:"6px 20px",borderRadius:20,fontSize:".8rem",fontFamily:"inherit",cursor:"pointer",background:cal===v?`linear-gradient(135deg,${C.gold},${C.rose})`:"transparent",color:cal===v?"#1a1428":C.txt2,border:cal===v?"none":`1px solid ${C.bdr}`,transition:"all .2s"}}>{l}</button>)}
@@ -438,14 +624,28 @@ export default function App(){
           </div>
           <button onClick={unlock} disabled={anim} style={{display:"block",width:"100%",margin:"6px 0 0",padding:"14px",background:anim?"rgba(212,165,116,.15)":`linear-gradient(135deg,${C.gold},${C.rose})`,color:anim?C.txt2:"#1a1428",border:"none",borderRadius:12,fontSize:"1rem",fontWeight:700,cursor:anim?"wait":"pointer",fontFamily:"inherit",letterSpacing:".15em",boxShadow:anim?"none":"0 4px 24px rgba(212,165,116,.25)",transition:"all .3s"}}>{anim?"✧ 正在解讀星象 ✧":"✦ 解鎖靈魂印記 ✦"}</button>
         </Glass>
+        {/* MINI ORACLE ROW */}
+        <div style={{marginTop:20,display:"flex",gap:10}}>
+          <div onClick={openFortune} style={{flex:1,cursor:"pointer",padding:"14px 10px",borderRadius:12,background:"rgba(212,165,116,.04)",border:"1px solid rgba(212,165,116,.1)",textAlign:"center",transition:"all .3s"}}>
+            <div style={{fontSize:"1rem",color:C.gold,marginBottom:4,textShadow:"0 0 12px rgba(212,165,116,.2)"}}>☰</div>
+            <div style={{fontSize:".72rem",fontWeight:600,color:C.gold}}>求籤</div>
+          </div>
+          <div onClick={openTarot} style={{flex:1,cursor:"pointer",padding:"14px 10px",borderRadius:12,background:"rgba(180,130,180,.04)",border:"1px solid rgba(180,130,180,.1)",textAlign:"center",transition:"all .3s"}}>
+            <div style={{fontSize:"1rem",color:C.purp,marginBottom:4,textShadow:"0 0 12px rgba(180,130,180,.2)"}}>☽</div>
+            <div style={{fontSize:".72rem",fontWeight:600,color:C.purp}}>塔羅</div>
+          </div>
+          <div onClick={openIChing} style={{flex:1,cursor:"pointer",padding:"14px 10px",borderRadius:12,background:"rgba(130,180,200,.04)",border:"1px solid rgba(130,180,200,.1)",textAlign:"center",transition:"all .3s"}}>
+            <div style={{fontSize:"1rem",color:C.blue,marginBottom:4,textShadow:"0 0 12px rgba(130,180,200,.2)"}}>◎</div>
+            <div style={{fontSize:".72rem",fontWeight:600,color:C.blue}}>易經</div>
+          </div>
+        </div>
       </div>
       <style>{CSS}</style>
     </div>);
   }
-
   // ── NAV BAR ──
   const Nav=()=><div style={{position:"sticky",top:0,zIndex:50,background:"rgba(12,12,26,.85)",backdropFilter:"blur(12px)",borderBottom:`1px solid ${C.bdr}`,padding:"8px 16px",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-    <span onClick={()=>setPage("home")} style={{cursor:"pointer",fontSize:"1rem",fontWeight:700,background:`linear-gradient(135deg,${C.gold},${C.rose})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>靈魂藍圖</span>
+    <span onClick={()=>setPage(soul?"home":"input")} style={{cursor:"pointer",fontSize:"1rem",fontWeight:700,background:`linear-gradient(135deg,${C.gold},${C.rose})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>靈魂藍圖</span>
     <div style={{display:"flex",gap:4,flexWrap:"wrap",justifyContent:"flex-end"}}>
       {[["home","首頁"],["ziwei","紫微"],["fortune","求籤"]].map(([id,l])=><button key={id} onClick={()=>setPage(id)} style={{padding:"4px 12px",borderRadius:12,fontSize:".7rem",background:page===id?"rgba(212,165,116,.12)":"transparent",color:page===id?C.gold:C.txt2,border:"none",cursor:"pointer",fontFamily:"inherit"}}>{l}</button>)}
     </div>
@@ -456,33 +656,46 @@ export default function App(){
     const s=soul.syn;
     return(<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt}}>
       <Stars/><Nav/>
-      <div style={{position:"relative",zIndex:1,maxWidth:720,margin:"0 auto",padding:"20px 16px 40px"}}>
-        <div style={{textAlign:"center",margin:"10px 0 24px"}}>
-          <div style={{fontSize:"1.6rem",fontWeight:700,letterSpacing:".1em",marginBottom:4}}>✦ 靈魂共鳴解析 ✦</div>
-          <div style={{fontSize:".76rem",color:C.txt2}}>六大命理系統為你萃取的核心特質</div>
+      <div style={{position:"relative",zIndex:1,maxWidth:700,margin:"0 auto",padding:"20px 16px 40px"}}>
+        {/* MINI ORACLE ROW */}
+        <div style={{display:"flex",gap:8,marginBottom:22}}>
+          <div onClick={openFortune} style={{flex:1,cursor:"pointer",padding:"12px 8px",borderRadius:10,background:"rgba(212,165,116,.04)",border:"1px solid rgba(212,165,116,.1)",textAlign:"center",transition:"all .3s"}}>
+            <div style={{fontSize:".9rem",color:C.gold,marginBottom:2,textShadow:"0 0 10px rgba(212,165,116,.2)"}}>☰</div>
+            <div style={{fontSize:".65rem",fontWeight:600,color:C.gold}}>求籤</div>
+          </div>
+          <div onClick={openTarot} style={{flex:1,cursor:"pointer",padding:"12px 8px",borderRadius:10,background:"rgba(180,130,180,.04)",border:"1px solid rgba(180,130,180,.1)",textAlign:"center",transition:"all .3s"}}>
+            <div style={{fontSize:".9rem",color:C.purp,marginBottom:2,textShadow:"0 0 10px rgba(180,130,180,.2)"}}>☽</div>
+            <div style={{fontSize:".65rem",fontWeight:600,color:C.purp}}>塔羅</div>
+          </div>
+          <div onClick={openIChing} style={{flex:1,cursor:"pointer",padding:"12px 8px",borderRadius:10,background:"rgba(130,180,200,.04)",border:"1px solid rgba(130,180,200,.1)",textAlign:"center",transition:"all .3s"}}>
+            <div style={{fontSize:".9rem",color:C.blue,marginBottom:2,textShadow:"0 0 10px rgba(130,180,200,.2)"}}>◎</div>
+            <div style={{fontSize:".65rem",fontWeight:600,color:C.blue}}>易經</div>
+          </div>
         </div>
-        {/* Gift */}
-        <Glass style={{marginBottom:14}}>
-          <div style={{fontSize:".72rem",color:C.gold,letterSpacing:".15em",marginBottom:8}}>🌟 天賦能量</div>
-          <div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>{s.giftText}</div>
+        {/* SOUL SYNOPSIS */}
+        <div style={{textAlign:"center",margin:"10px 0 20px"}}>
+          <div style={{fontSize:"1.3rem",fontWeight:700,letterSpacing:".1em",color:"rgba(255,255,255,.9)"}}>✦ 靈魂共鳴解析 ✦</div>
+          <div style={{fontSize:".78rem",color:C.txt2,marginTop:4}}>六大命理系統為你萃取的核心特質</div>
+        </div>
+        <Glass style={{marginBottom:14,padding:"20px 22px"}}>
+          <div style={{fontSize:".82rem",color:C.gold,letterSpacing:".15em",marginBottom:10}}>✦ 天賦能量</div>
+          <div style={{fontSize:".88rem",lineHeight:2,color:"rgba(255,255,255,.85)"}}>{s.giftText}</div>
         </Glass>
-        {/* Cosmic guidance */}
-        <Glass style={{marginBottom:14}}>
-          <div style={{fontSize:".72rem",color:C.rose,letterSpacing:".15em",marginBottom:8}}>🌙 近期宇宙指引</div>
-          <div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>{s.cosmic}</div>
+        <Glass style={{marginBottom:14,padding:"20px 22px"}}>
+          <div style={{fontSize:".82rem",color:C.rose,letterSpacing:".15em",marginBottom:10}}>☽ 近期宇宙指引</div>
+          <div style={{fontSize:".88rem",lineHeight:2,color:"rgba(255,255,255,.85)"}}>{s.cosmic}</div>
         </Glass>
-        {/* Shadow */}
-        <Glass style={{marginBottom:20}}>
-          <div style={{fontSize:".72rem",color:C.purp,letterSpacing:".15em",marginBottom:8}}>🔑 人生課題</div>
-          <div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>{s.shadow}</div>
+        <Glass style={{marginBottom:20,padding:"20px 22px"}}>
+          <div style={{fontSize:".82rem",color:C.purp,letterSpacing:".15em",marginBottom:10}}>✦ 人生課題</div>
+          <div style={{fontSize:".88rem",lineHeight:2,color:"rgba(255,255,255,.85)"}}>{s.shadow}</div>
         </Glass>
-        {/* Nav cards */}
-        <div style={{fontSize:".82rem",fontWeight:600,textAlign:"center",marginBottom:12,color:C.txt2,letterSpacing:".1em"}}>── 深入探索各門派 ──</div>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:10}}>
-          {navCards.map(c=><Glass key={c.id} style={{cursor:"pointer",padding:"16px 18px",transition:"transform .2s"}} onClick={()=>setPage(c.id)}>
-            <div style={{fontSize:"1.4rem",marginBottom:6}}>{c.icon}</div>
-            <div style={{fontSize:".85rem",fontWeight:700,color:C.gold,marginBottom:3}}>{c.title}</div>
-            <div style={{fontSize:".7rem",color:C.txt2,lineHeight:1.5}}>{c.sub}</div>
+        {/* NAV CARDS */}
+        <div style={{fontSize:".82rem",fontWeight:600,textAlign:"center",marginBottom:14,color:"rgba(255,255,255,.4)",letterSpacing:".12em"}}>── 深入探索各門派 ──</div>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(200px,1fr))",gap:12}}>
+          {navCards.map(c=><Glass key={c.id} style={{cursor:"pointer",padding:"18px 20px",transition:"all .3s"}} onClick={()=>setPage(c.id)}>
+            <div style={{fontSize:"1.2rem",marginBottom:8,color:C.gold,textShadow:"0 0 12px rgba(212,165,116,.2)"}}>{c.icon}</div>
+            <div style={{fontSize:".9rem",fontWeight:700,color:C.gold,marginBottom:4}}>{c.title}</div>
+            <div style={{fontSize:".75rem",color:"rgba(255,255,255,.45)",lineHeight:1.6}}>{c.sub}</div>
           </Glass>)}
         </div>
       </div>
@@ -540,16 +753,16 @@ export default function App(){
       <div style={{maxWidth:660,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
         <PB icon="✨" title="星座解析"/>
         <Glass style={{textAlign:"center",marginBottom:14}}>
-          <div style={{fontSize:"2.5rem",marginBottom:6}}>{{"火":"🔥","水":"💧","土":"🌍","風":"💨"}[z.el]||"✨"}</div>
+          <div style={{fontSize:"2.2rem",marginBottom:6,color:C.gold,textShadow:"0 0 20px rgba(212,165,116,.3)"}}>{{"火":"△","水":"▽","土":"◇","風":"○"}[z.el]||"✨"}</div>
           <div style={{fontSize:"1.4rem",fontWeight:700,color:C.gold,marginBottom:4}}>{soul.zodiac}</div>
           <div style={{fontSize:".78rem",color:C.txt2}}>元素：{z.el} ｜ 能量：{z.en}</div>
         </Glass>
         <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 核心特質</div><div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>{z.tr.map((t,i)=><span key={i} style={{padding:"6px 16px",borderRadius:20,background:`${C.gold}11`,border:`1px solid ${C.gold}33`,fontSize:".78rem",color:C.gold}}>{t}</span>)}</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>你是擁有「{z.en}」能量的{z.el}象星座。{z.tr.join("、")}——這些天賦讓你獨特而閃耀。</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>💕 感情解析</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt,marginBottom:10}}>{z.love}</div>{z.compat&&<div style={{fontSize:".76rem",color:C.txt2}}>最佳靈魂伴侶：{z.compat.map((c,i)=><span key={i} style={{display:"inline-block",margin:"2px 4px",padding:"3px 10px",borderRadius:12,background:`${C.rose}11`,border:`1px solid ${C.rose}33`,fontSize:".72rem",color:C.rose}}>{c}</span>)}</div>}</Glass>
+        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>❖ 感情解析</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt,marginBottom:10}}>{z.love}</div>{z.compat&&<div style={{fontSize:".76rem",color:C.txt2}}>最佳靈魂伴侶：{z.compat.map((c,i)=><span key={i} style={{display:"inline-block",margin:"2px 4px",padding:"3px 10px",borderRadius:12,background:`${C.rose}11`,border:`1px solid ${C.rose}33`,fontSize:".72rem",color:C.rose}}>{c}</span>)}</div>}</Glass>
         <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.blue,letterSpacing:".12em",marginBottom:10}}>💼 事業天賦</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{z.career}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>🌿 健康提醒</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{z.health}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.purp,letterSpacing:".12em",marginBottom:10}}>🔑 靈魂課題</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{z.sh}——擁抱它，它會成為你最大的力量。</div></Glass>
-        <Glass style={{display:"flex",justifyContent:"center",flexDirection:"column",alignItems:"center"}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>⚡ 能量雷達圖</div><Radar labels={["事業","財運","感情","健康","人緣","靈性"]} values={vals} size={240}/></Glass>
+        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>◇ 健康提醒</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{z.health}</div></Glass>
+        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.purp,letterSpacing:".12em",marginBottom:10}}>✦ 靈魂課題</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{z.sh}——擁抱它，它會成為你最大的力量。</div></Glass>
+        <Glass style={{display:"flex",justifyContent:"center",flexDirection:"column",alignItems:"center"}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 能量雷達圖</div><Radar labels={["事業","財運","感情","健康","人緣","靈性"]} values={vals} size={240}/></Glass>
       </div><style>{CSS}</style>
     </div>);
   }
@@ -562,15 +775,15 @@ export default function App(){
         <PB icon="🔮" title="生命靈數"/>
         <Glass style={{textAlign:"center",marginBottom:14}}><div style={{fontSize:"3.5rem",fontWeight:900,background:`linear-gradient(135deg,${C.gold},${C.rose})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:4,lineHeight:1.2}}>{soul.lp}</div><div style={{fontSize:"1.15rem",fontWeight:700,color:C.gold,marginBottom:6}}>{lp.t}</div><div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center"}}>{lp.g.map((g,i)=><span key={i} style={{padding:"5px 14px",borderRadius:20,background:`${C.purp}15`,border:`1px solid ${C.purp}33`,fontSize:".76rem",color:C.purp}}>{g}</span>)}</div></Glass>
         <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 靈魂藍圖</div><div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>{lp.d}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>💕 感情與關係</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{lp.love}</div></Glass>
+        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>❖ 感情與關係</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{lp.love}</div></Glass>
         <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.blue,letterSpacing:".12em",marginBottom:10}}>💼 事業與財富</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{lp.career}</div></Glass>
-        <Glass><div style={{fontSize:".74rem",color:C.purp,letterSpacing:".12em",marginBottom:10}}>🔑 人生核心課題</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{lp.ch}</div></Glass>
+        <Glass><div style={{fontSize:".74rem",color:C.purp,letterSpacing:".12em",marginBottom:10}}>✦ 人生核心課題</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{lp.ch}</div></Glass>
         <Glass style={{marginTop:14}}>
-          <div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:12}}>🤝 號碼相性</div>
+          <div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:12}}>◎ 號碼相性</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
             <div style={{padding:12,borderRadius:10,background:`${C.gold}08`}}><div style={{fontSize:".65rem",color:C.txt2,marginBottom:6}}>✅ 最合拍號碼</div><div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{(lp.best||[]).map(n=><span key={n} style={{width:30,height:30,borderRadius:15,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:".85rem",fontWeight:700,background:`${C.gold}22`,border:`1px solid ${C.gold}44`,color:C.gold}}>{n}</span>)}</div></div>
             <div style={{padding:12,borderRadius:10,background:"rgba(176,112,128,.06)"}}><div style={{fontSize:".65rem",color:C.txt2,marginBottom:6}}>⚠️ 需注意號碼</div><div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{(lp.avoid||[]).map(n=><span key={n} style={{width:30,height:30,borderRadius:15,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:".85rem",fontWeight:700,background:"rgba(176,112,128,.12)",border:"1px solid rgba(176,112,128,.3)",color:"#c08888"}}>{n}</span>)}</div></div>
-            <div style={{padding:12,borderRadius:10,background:`${C.rose}08`}}><div style={{fontSize:".65rem",color:C.txt2,marginBottom:6}}>💕 最佳戀人號碼</div><div style={{display:"flex",alignItems:"center",gap:8}}><span style={{width:36,height:36,borderRadius:18,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",fontWeight:900,background:`${C.rose}22`,border:`1px solid ${C.rose}44`,color:C.rose}}>{lp.lover}</span><span style={{fontSize:".75rem",color:C.txt2}}>{LPD[lp.lover]?.t||""}</span></div></div>
+            <div style={{padding:12,borderRadius:10,background:`${C.rose}08`}}><div style={{fontSize:".65rem",color:C.txt2,marginBottom:6}}>❖ 最佳戀人號碼</div><div style={{display:"flex",alignItems:"center",gap:8}}><span style={{width:36,height:36,borderRadius:18,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",fontWeight:900,background:`${C.rose}22`,border:`1px solid ${C.rose}44`,color:C.rose}}>{lp.lover}</span><span style={{fontSize:".75rem",color:C.txt2}}>{LPD[lp.lover]?.t||""}</span></div></div>
             <div style={{padding:12,borderRadius:10,background:`${C.blue}08`}}><div style={{fontSize:".65rem",color:C.txt2,marginBottom:6}}>⭐ 最佳貴人號碼</div><div style={{display:"flex",alignItems:"center",gap:8}}><span style={{width:36,height:36,borderRadius:18,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",fontWeight:900,background:`${C.blue}18`,border:`1px solid ${C.blue}44`,color:C.blue}}>{lp.noble}</span><span style={{fontSize:".75rem",color:C.txt2}}>{LPD[lp.noble]?.t||""}</span></div></div>
           </div>
         </Glass>
@@ -585,7 +798,7 @@ export default function App(){
       <div style={{maxWidth:660,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
         <PB icon="⚡" title="人類圖"/>
         <Glass style={{textAlign:"center",marginBottom:14}}>
-          <div style={{fontSize:"2.2rem",marginBottom:8}}>⚡</div>
+          <div style={{fontSize:"2.2rem",marginBottom:8,color:C.gold,textShadow:"0 0 20px rgba(212,165,116,.3)"}}>⚡</div>
           <div style={{fontSize:"1.3rem",fontWeight:700,color:C.gold,marginBottom:4}}>{h.type}</div>
           <div style={{fontSize:".76rem",color:C.txt2,marginBottom:10}}>佔全球人口 {h.pct} ｜ 人生角色 {h.def}</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
@@ -595,8 +808,8 @@ export default function App(){
           </div>
         </Glass>
         <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 你的設計</div><div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>{h.desc}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>⚡ 能量運作</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{h.energy}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>💡 生活實踐建議</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{h.tips}</div></Glass>
+        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>◌ 能量運作</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{h.energy}</div></Glass>
+        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>✦ 生活實踐建議</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{h.tips}</div></Glass>
         <Glass><div style={{fontSize:".74rem",color:"#c08080",letterSpacing:".12em",marginBottom:10}}>⚠️ 非自己主題：{h.notSelf}</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>當你感到「{h.notSelf}」時，代表你偏離了自己的設計。回到策略「{h.st}」，信任「{h.auth}」內在權威，讓「{h.sig}」成為你的指南針。</div></Glass>
       </div><style>{CSS}</style>
     </div>);
@@ -611,30 +824,151 @@ export default function App(){
         <Glass style={{textAlign:"center",marginBottom:14}}><div style={{fontSize:"2.2rem",marginBottom:8}}>🌀</div><div style={{fontSize:"1.2rem",fontWeight:700,color:C.gold}}>{m.tone} · {m.seal}</div><div style={{fontSize:".76rem",color:C.txt2,marginTop:4}}>Kin {m.kin} ｜ 調性：{m.td}</div></Glass>
         <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 星系印記：{md.c||""}</div><div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>你的本質是「{md.d||""}」。{md.g||""}</div></Glass>
         <Glass style={{marginBottom:14}}><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}><div style={{padding:12,borderRadius:10,background:`${C.gold}08`}}><div style={{fontSize:".68rem",color:C.txt2,marginBottom:4}}>超能力</div><div style={{fontSize:".88rem",color:C.gold,fontWeight:600}}>{md.pw||"—"}</div></div><div style={{padding:12,borderRadius:10,background:`${C.purp}08`}}><div style={{fontSize:".68rem",color:C.txt2,marginBottom:4}}>靈魂挑戰</div><div style={{fontSize:".88rem",color:C.purp,fontWeight:600}}>{md.ch||"—"}</div></div></div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>🌟 星際支援團隊</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}><div style={{textAlign:"center",padding:10,borderRadius:8,background:"rgba(255,255,255,.02)"}}><div style={{fontSize:".65rem",color:C.txt2}}>引導</div><div style={{fontSize:".82rem",color:C.gold,marginTop:3}}>{m.guide}</div></div><div style={{textAlign:"center",padding:10,borderRadius:8,background:"rgba(255,255,255,.02)"}}><div style={{fontSize:".65rem",color:C.txt2}}>挑戰</div><div style={{fontSize:".82rem",color:C.rose,marginTop:3}}>{m.anti}</div></div><div style={{textAlign:"center",padding:10,borderRadius:8,background:"rgba(255,255,255,.02)"}}><div style={{fontSize:".65rem",color:C.txt2}}>隱藏力量</div><div style={{fontSize:".82rem",color:C.purp,marginTop:3}}>{m.occ}</div></div></div></Glass>
-        <Glass><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>🌿 宇宙訊息</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{md.g||"跟隨你的直覺。"} 調性「{m.tone}」代表{m.td}的力量——當你與這個頻率對齊時，生命會以驚喜的方式展開。</div></Glass>
+        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>☆ 星際支援團隊</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}><div style={{textAlign:"center",padding:10,borderRadius:8,background:"rgba(255,255,255,.02)"}}><div style={{fontSize:".65rem",color:C.txt2}}>引導</div><div style={{fontSize:".82rem",color:C.gold,marginTop:3}}>{m.guide}</div></div><div style={{textAlign:"center",padding:10,borderRadius:8,background:"rgba(255,255,255,.02)"}}><div style={{fontSize:".65rem",color:C.txt2}}>挑戰</div><div style={{fontSize:".82rem",color:C.rose,marginTop:3}}>{m.anti}</div></div><div style={{textAlign:"center",padding:10,borderRadius:8,background:"rgba(255,255,255,.02)"}}><div style={{fontSize:".65rem",color:C.txt2}}>隱藏力量</div><div style={{fontSize:".82rem",color:C.purp,marginTop:3}}>{m.occ}</div></div></div></Glass>
+        <Glass><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>✦ 宇宙訊息</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{md.g||"跟隨你的直覺。"} 調性「{m.tone}」代表{m.td}的力量——當你與這個頻率對齊時，生命會以驚喜的方式展開。</div></Glass>
       </div><style>{CSS}</style>
     </div>);
   }
   // ── BAZI PAGE ──
   if(page==="bazi"&&soul){
     const b=soul.bazi;
+    const elEmoji={"木":"木","火":"火","土":"土","金":"金","水":"水"};
+    const elPersona={"木":{title:"溫柔的參天大樹",p1:"你的靈魂本相是沉穩而充滿生機的「蒼翠之木」。你天生帶著一股向上生長的力量，就像春天裡最早抽芽的那棵樹——沉默、堅定，卻生機盎然。在人群中，你是那個不爭不搶，卻讓所有人都願意靠近的存在。你的溫柔不是軟弱，而是一種深植土壤的從容。",p2:"你在人際關係中扮演的角色往往是傾聽者和支撐者。朋友遇到困難時，你是第一個被想到的人。然而，大樹也會有枝葉過度繁茂而來不及自我修剪的時候——你常常在照顧別人的過程中忘了回頭看看自己。內心深處，你渴望被無條件接納，渴望有人不是因為你「有用」才靠近你。",p3:"能量保養建議：每週給自己一段「不被需要」的獨處時光。清晨在公園散步，赤腳踩在草地上，讓大地的能量重新灌注你的根系。綠色和棕色是你的能量色，翡翠或綠幽靈水晶能穩定你的心輪。"},"火":{title:"溫暖的微光燭火",p1:"你的靈魂本相是溫柔而明亮的「微光燭火」。你天生具備洞察人心的溫暖，總能在別人陷入低谷時，給予最安定的指引。在人群中，你或許不是最張揚的那一個，但絕對是最不可或缺的靈魂人物。你的笑容有一種魔力，能讓緊繃的空氣瞬間柔軟下來。",p2:"然而，燭火最怕的是風。你對環境的情緒極其敏感，別人不經意的一句話可能在你心裡燃燒好幾天。你的熱情如果沒有適當的邊界保護，很容易在不知不覺中燃燒耗竭。你有時會突然感到莫名的疲憊和空虛——那是因為你把光都給了別人，卻忘了留一盞給自己。",p3:"能量保養建議：每天為自己點一支蠟燭，在燭光前靜坐三分鐘，這不只是儀式，而是在提醒你的靈魂：你的光值得先照亮自己。紅色和紫色是你的能量色，紅紋石或石榴石能喚醒你的生命力。"},"土":{title:"包容的大地之母",p1:"你的靈魂本相是穩重而深厚的「厚德之土」。你像大地一樣承載著周圍人的喜怒哀樂，不動聲色地消化一切。你的存在給人一種安全感——只要你在，一切就不會太糟。你的耐心和包容力幾乎是無限的，這讓你成為朋友圈中最被信賴的人。",p2:"但大地長期承受壓力也會地震。你習慣把所有情緒都往下壓、往內吞，表面看起來雲淡風輕，內心可能早已暗潮洶湧。你最大的課題不是學會更堅強，而是學會示弱——允許自己偶爾崩塌，才能在廢墟上建造更真實的自己。",p3:"能量保養建議：每週花時間接觸陶土或烹飪，讓雙手與「土」的元素產生連結。黃色和米色是你的能量色，黃水晶或虎眼石能為你帶來溫暖的自信。"},"金":{title:"清銳的光明之劍",p1:"你的靈魂本相是鋒利而純淨的「清銳之金」。你擁有一雙能穿透虛偽的眼睛，在混亂的世界裡，你總能迅速辨別什麼是真、什麼是假。你說話直接、行事果斷，不喜歡拐彎抹角。你的正義感和原則性讓你在關鍵時刻成為最可靠的決策者。",p2:"金的另一面是孤獨。你的高標準有時會讓身邊的人感到壓力，而你自己也常因為「世界不夠完美」而感到失望。你在人際關係中最大的挑戰是學會接受不完美——包括自己的不完美。當你放下那把隨時準備審判的劍，你會發現世界溫柔了許多。",p3:"能量保養建議：嘗試接觸一些柔軟的活動——水彩畫、瑜伽、或者單純地擁抱一個你信任的人。白色和金色是你的能量色，白水晶或月光石能柔化你的銳氣。"},"水":{title:"深邃的幽靈之泉",p1:"你的靈魂本相是幽深而靈動的「幽深之水」。你的內在像一座深不見底的湖泊，表面平靜無波，底下卻蘊藏著驚人的智慧和直覺。你天生就能感知到別人隱藏的情緒和未說出口的心事。你的感受力是你最強大的天賦，也是你最脆弱的軟肋。",p2:"水最大的特質是無形——你可以適應任何容器，也因此容易在不同的環境中迷失自己。你有時會發現自己在不同的人面前展現完全不同的面貌，久了甚至忘記哪一個才是「真正的自己」。你最深層的渴望是被完整地看見，不是某一面的你，而是全部的你。",p3:"能量保養建議：每天花五分鐘做自由書寫，不需要邏輯、不需要結構，讓水一樣的思緒自由流淌。藍色和黑色是你的能量色，海藍寶或拉長石能增強你的直覺力。"}};
+    const ep=elPersona[b.dmEl]||elPersona["火"];
+    const weakAdv={"木":"要喚醒木的能量，建議在居家空間增加綠色植物，每天散步時觀察大自然的生長節奏。穿著森林綠的服飾，佩戴翡翠或綠東陵，能幫助你重建生長和擴展的力量。","火":"要喚醒火的能量，建議每天早起看一次日出，或者在桌上放一盞暖色調的燈。紅色和橙色的服飾能提振你的行動力，紅紋石或紅碧璽能點燃你內在沉睡的熱情。","土":"要喚醒土的能量，建議嘗試手作陶藝或下廚烹飪。赤腳踩在土地上能快速補充這股能量。黃色和棕色的服飾、黃水晶或虎眼石，都能幫助你找回穩定的根基。","金":"要喚醒金的能量，建議整理你的居住空間，丟掉不再需要的物品。簡潔的秩序能召喚金的清明之氣。白色和銀色的服飾、白水晶或月光石能強化你的判斷力和決斷力。","水":"要喚醒水的能量，建議本週嘗試自由書寫，或者在睡前聽流水聲的白噪音冥想。多穿著海水藍或深靛色的服飾，海藍寶或拉長石能增強你的直覺和流動性。"}[b.weak];
+    const yr=new Date().getFullYear();
+    const fortuneActions={"比肩":["每天寫下一個「只為自己」的小目標","找一位同頻的夥伴一起成長","重新審視你的核心價值觀"],"劫財":["果斷處理一件拖延已久的事","學習說「不」的藝術","把能量集中在最重要的三件事上"],"食神":["每週至少安排一次「純粹享受」的時光","嘗試一個新的興趣或手作","用五感去感受日常的美好"],"傷官":["開始一個全新的創作計畫","勇敢表達那些藏在心底的想法","報名一堂你一直感興趣的課程"],"偏財":["大膽嘗試一個新的收入來源","主動聯繫三位很久沒見的朋友","記錄你的財務流向並制定計畫"],"正財":["開一個專屬的儲蓄帳戶","在現有的工作中深耕專業","建立你的日常健康習慣"],"七殺":["勇敢面對你一直在逃避的事","設定一個超出舒適圈的挑戰","斷捨離不再服務你的關係或習慣"],"正官":["承擔一個領導角色或專案","建立更有紀律的作息","學習一項能提升專業公信力的技能"],"偏印":["每天花20分鐘閱讀一本深度書籍","探索一個冷門但令你著迷的領域","練習冥想或自我覺察日記"],"正印":["回去拜訪一位對你影響深遠的師長","學習一項新知識或報名課程","給自己安排一趟回歸本心的旅行"]}[b.lySS]||["保持覺察","照顧好自己","相信宇宙的安排"];
+    const wxArr=["木","火","土","金","水"].map(e=>({e,v:b.wx5[e]})).sort((a,c)=>c.v-a.v);
+    const top2=new Set([wxArr[0].e,wxArr[1].e]);
     return(<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt}}><Stars/><Nav/>
-      <div style={{maxWidth:660,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
-        <PB icon="🎋" title="八字命理"/>
-        <Glass style={{textAlign:"center",marginBottom:14}}><div style={{fontSize:"2rem",marginBottom:8}}>🎋</div><div style={{fontSize:"1.3rem",fontWeight:700,color:C.gold,marginBottom:6}}>日主：{b.dm}（{b.dmEl}）</div><div style={{fontSize:".78rem",color:C.txt2}}>年柱 {b.yg}（{b.yEl}）</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 日主解析</div><div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>{b.desc} 五行屬{b.dmEl}——{b.dmEl==="木"?"生長力和仁慈是你的底色":b.dmEl==="火"?"熱情和光明是你的底色":b.dmEl==="土"?"穩重和包容是你的底色":b.dmEl==="金"?"果斷和正義是你的底色":"智慧和靈動是你的底色"}。</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>⚖️ 身強身弱</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{b.sDesc}</div><div style={{marginTop:8,height:6,borderRadius:3,background:"rgba(255,255,255,.04)",overflow:"hidden"}}><div style={{height:"100%",width:`${Math.max(15,Math.min(85,(b.dsi+5)*10))}%`,background:`linear-gradient(90deg,${C.purp},${C.gold})`,borderRadius:3}}/></div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.blue,letterSpacing:".12em",marginBottom:10}}>🔄 五行生剋</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>日主「{b.dm}」與年柱「{b.yEl}」：{b.rel}</div><div style={{marginTop:10,display:"flex",justifyContent:"center",gap:10}}>{["木","火","土","金","水"].map(e=><div key={e} style={{width:44,height:44,borderRadius:22,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".82rem",fontWeight:700,background:e===b.dmEl?`${C.gold}33`:e===b.yEl?`${C.rose}22`:"rgba(255,255,255,.03)",border:`1px solid ${e===b.dmEl?C.gold+"66":e===b.yEl?C.rose+"44":C.bdr}`,color:e===b.dmEl?C.gold:e===b.yEl?C.rose:C.txt2}}>{e}</div>)}</div></Glass>
-        <Glass><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>🌿 開運建議</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{b.dmEl==="木"?"多親近自然，綠色是你的幸運色。春天是能量最旺的季節。":b.dmEl==="火"?"紅色紫色提升能量。保持熱情也要學會收斂。":b.dmEl==="土"?"黃色米色帶來穩定。季節交替時注意養生。":b.dmEl==="金"?"白色金色是幸運色。秋天適合做重要決定。":"黑色藍色增強能量。冬天是蓄力的最佳時機。"}</div></Glass>
-      </div><style>{CSS}</style>
+      <div style={{maxWidth:680,margin:"0 auto",padding:"20px 16px 50px",position:"relative",zIndex:1}}>
+        <PB icon="🎋" title="八字能量解碼"/>
+        {/* ══ 區塊一 ══ */}
+        <Glass style={{textAlign:"center",marginBottom:20,padding:"32px 22px"}}>
+          <div style={{fontSize:"2.8rem",marginBottom:8,fontWeight:100,color:C.gold,textShadow:"0 0 30px rgba(212,165,116,.4), 0 0 60px rgba(212,165,116,.15)",letterSpacing:".3em",fontFamily:"'Noto Serif SC',serif"}}>{b.dmEl}</div>
+          <div style={{fontSize:"1.25rem",fontWeight:700,color:C.gold,marginBottom:6}}>{ep.title}</div>
+          <div style={{fontSize:".88rem",color:"rgba(255,255,255,.65)"}}>
+            <TT setTtip={setTtip} term="日主天干" def="八字中代表「你自己」的核心符號。由出生日的天干決定，是整個命盤的靈魂中心。">靈魂本相</TT>：{b.dmEl} ｜ 年柱 {b.yg}（{b.yEl}）
+          </div>
+        </Glass>
+        <Glass style={{marginBottom:20,padding:"24px 22px"}}>
+          <div style={{fontSize:".88rem",color:C.gold,letterSpacing:".12em",marginBottom:14}}>✦ 靈魂本質光譜</div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)"}}>{ep.p1}</div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)",marginTop:14}}>{ep.p2}</div>
+          <div style={{fontSize:".92rem",lineHeight:2.1,color:"rgba(255,255,255,.85)",marginTop:14,padding:"14px 16px",borderRadius:12,background:"rgba(212,165,116,.06)",borderLeft:"3px solid rgba(212,165,116,.3)"}}>{ep.p3}</div>
+        </Glass>
+        {/* ══ 區塊二 ══ */}
+        <Glass style={{marginBottom:20,padding:"24px 22px"}}>
+          <div style={{fontSize:".88rem",color:C.rose,letterSpacing:".12em",marginBottom:16}}>◌ 內在元素共舞</div>
+          <div style={{display:"flex",justifyContent:"center",marginBottom:18}}><Radar labels={["木","火","土","金","水"]} values={[b.wx5.木,b.wx5.火,b.wx5.土,b.wx5.金,b.wx5.水]} size={220}/></div>
+          <div style={{display:"flex",justifyContent:"center",gap:14,flexWrap:"wrap",marginBottom:18}}>
+            {["木","火","土","金","水"].map(e=>{const lit=top2.has(e);return <div key={e} style={{textAlign:"center",opacity:lit?1:.35,transition:"all .3s"}}><div style={{width:46,height:46,borderRadius:23,display:"flex",alignItems:"center",justifyContent:"center",fontSize:".88rem",fontWeight:700,background:lit?"rgba(212,165,116,.18)":"rgba(255,255,255,.03)",border:lit?"1.5px solid rgba(212,165,116,.5)":"1.5px solid rgba(255,255,255,.08)",color:lit?C.gold:"rgba(255,255,255,.3)"}}>{e}</div><div style={{fontSize:".72rem",color:lit?"rgba(255,255,255,.7)":"rgba(255,255,255,.25)",marginTop:4,fontWeight:lit?600:400}}>{b.wx5[e]}%</div></div>})}
+          </div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)"}}>
+            在你的內在宇宙中，<TT setTtip={setTtip} term="五行" def="金、木、水、火、土五種能量，代表宇宙萬物運行的基本力量。每個人體內都有這五種能量的獨特配比。">五行</TT>的能量呈現出獨特的分佈。「{wxArr[0].e}」與「{wxArr[1].e}」是你最豐盛的兩股能量，分別賦予了你{wxArr[0].e==="木"?"強大的生命力與成長潛能":wxArr[0].e==="火"?"驚人的熱情與感染力":wxArr[0].e==="土"?"深厚的穩定性與承載力":wxArr[0].e==="金"?"銳利的判斷力與執行力":"敏銳的直覺與適應力"}，以及{wxArr[1].e==="木"?"持續向上的生長動能":wxArr[1].e==="火"?"溫暖明亮的行動力":wxArr[1].e==="土"?"踏實穩固的安全感":wxArr[1].e==="金"?"清晰果斷的辨別力":"靈活變通的適應性"}。
+          </div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)",marginTop:10}}>
+            然而，代表「{b.weak}」的能量目前處於休眠狀態。在<TT setTtip={setTtip} term="相生相剋" def="五行之間的互動關係：木生火、火生土、土生金、金生水、水生木（相生）；木剋土、土剋水、水剋火、火剋金、金剋木（相剋）。">相生相剋</TT>的循環中，這可能讓你近期感到某些面向的失衡。
+          </div>
+          <div style={{fontSize:".92rem",lineHeight:2.1,color:"rgba(255,255,255,.82)",marginTop:14,padding:"14px 16px",borderRadius:12,background:"rgba(130,180,200,.06)",borderLeft:"3px solid rgba(130,180,200,.3)"}}>
+            ✦ 調頻建議：{weakAdv}
+          </div>
+        </Glass>
+        {/* ══ 區塊三 ══ */}
+        <Glass style={{marginBottom:20,padding:"24px 22px"}}>
+          <div style={{fontSize:".88rem",color:C.purp,letterSpacing:".12em",marginBottom:16}}>◈ 潛藏的靈魂天賦</div>
+          <div style={{fontSize:".9rem",color:"rgba(255,255,255,.6)",marginBottom:14}}>你的命盤中，<TT setTtip={setTtip} term="十神" def="八字中描述你與周圍能量關係的十種角色。它們代表你天生的才華、行為模式和人生主題。">十神</TT>揭示了你獨特的超能力組合：</div>
+          <div style={{display:"flex",flexDirection:"column",gap:14}}>
+            {b.talents.map((t,i)=><div key={i} style={{padding:"18px 20px",borderRadius:14,background:"rgba(255,255,255,.025)",border:"1px solid rgba(255,255,255,.08)",position:"relative"}}>
+              <div style={{position:"absolute",right:14,top:14,fontSize:"2rem",opacity:.04,color:C.gold}}>{t.icon}</div>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+                <span style={{fontSize:"1.4rem",color:C.gold,textShadow:"0 0 12px rgba(212,165,116,.3)"}}>{t.icon}</span>
+                <span style={{fontSize:"1.05rem",fontWeight:700,color:C.gold}}><TT setTtip={setTtip} term={t.name} def={`傳統八字稱「${t.ss}」。${t.ss==="傷官"?"代表才華洋溢、打破常規與極強的表達渴望。":t.ss==="七殺"?"代表突破框架、行動力與挑戰權威的能量。":t.ss==="正印"?"代表包容、吸收知識、母性與無私的奉獻。":t.ss==="食神"?"代表享受生活、感官天賦與天然的療癒力。":t.ss==="偏財"?"代表冒險精神、社交天賦與靈活的商業嗅覺。":t.ss==="正官"?"代表紀律、公信力與天生的領導氣質。":t.ss==="比肩"?"代表獨立自主、堅韌不拔的自我力量。":t.ss==="劫財"?"代表果斷行動、慷慨豪爽的執行力量。":t.ss==="正財"?"代表穩健累積、踏實守護的經營能力。":"代表獨特洞察、直覺敏銳的思維天賦。"}`}>{t.name}</TT></span>
+              </div>
+              <div style={{fontSize:".93rem",lineHeight:2,color:"rgba(255,255,255,.85)"}}>{t.desc}</div>
+            </div>)}
+          </div>
+        </Glass>
+        {/* ══ 區塊四：財運官運 ══ */}
+        <Glass style={{marginBottom:20,padding:"24px 22px"}}>
+          <div style={{fontSize:".88rem",color:"#e8c170",letterSpacing:".12em",marginBottom:16}}>✧ 財運與事業格局</div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)"}}>
+            {b.dmEl==="木"?"木主仁，你的財運來自於「土」——穩紮穩打、經營人脈。你不適合投機取巧，反而是那種越耕耘越豐收的類型。事業上，你的成長像大樹一樣需要時間紮根，但一旦站穩，便枝繁葉茂、難以撼動。適合你的領域包括教育、文創、醫療健康、農業或任何需要長期深耕的行業。你的財富密碼是「耐心」——別急著收割，讓時間替你累積複利。":b.dmEl==="火"?"火主禮，你的財運來自於「金」——精準判斷、果斷出手。你天生具備敏銳的商業嗅覺，能在混亂中看見機會。事業上，你適合站在舞台前方，用你的熱情和感染力帶動團隊。適合的領域包括行銷、娛樂、餐飲、科技創新或任何需要開創性的行業。你的財富密碼是「行動力」——想到就做，但記得保留三成資金作為安全墊。":b.dmEl==="土"?"土主信，你的財運來自於「水」——靈活變通、善抓趨勢。你是天生的資源整合者，懂得把不起眼的東西變成寶藏。事業上，你的優勢在於穩定和信任感，別人願意把重要的事託付給你。適合的領域包括房地產、金融理財、人力資源、物流或任何需要信用基礎的行業。你的財富密碼是「信用」——你的口碑就是最大的資產。":b.dmEl==="金"?"金主義，你的財運來自於「木」——開拓新局、創造價值。你對品質有極高的要求，這讓你在專業領域中容易脫穎而出。事業上，你適合擔任決策者或專業顧問角色，你的判斷力是團隊最寶貴的資產。適合的領域包括法律、財務、工程、科技、奢侈品或任何講究精準和品質的行業。你的財富密碼是「專業」——把一件事做到極致，財富自然追隨。":"水主智，你的財運來自於「火」——點燃熱情、創造影響力。你的腦袋裡永遠有別人想不到的點子，這是你最珍貴的財富來源。事業上，你適合做幕後策劃者或創意總監，用智慧引導方向。適合的領域包括諮詢、研究、寫作、投資分析或任何需要洞察力的行業。你的財富密碼是「洞見」——當別人還在看表面，你已經看透了本質。"}
+          </div>
+          <div style={{display:"flex",gap:10,marginTop:14,flexWrap:"wrap"}}>
+            {(b.dmEl==="木"?[["⟐","深耕型"],["⟡","人脈型"],["⟢","知識型"]]:b.dmEl==="火"?[["⟐","開創型"],["⟡","行動型"],["⟢","靈感型"]]:b.dmEl==="土"?[["⟐","整合型"],["⟡","信用型"],["⟢","穩健型"]]:b.dmEl==="金"?[["⟐","專精型"],["⟡","品質型"],["⟢","策略型"]]:[["⟐","智慧型"],["⟡","洞察型"],["⟢","變通型"]]).map(([ic,lb],i)=><div key={i} style={{flex:1,minWidth:80,textAlign:"center",padding:"10px 8px",borderRadius:10,background:"rgba(232,193,112,.06)",border:"1px solid rgba(232,193,112,.15)"}}><div style={{fontSize:"1.1rem",marginBottom:4,color:"inherit",textShadow:"0 0 8px currentColor",opacity:.7}}>{ic}</div><div style={{fontSize:".78rem",color:C.gold,fontWeight:600}}>{lb}</div></div>)}
+          </div>
+        </Glass>
+        {/* ══ 區塊五：婚姻愛情 ══ */}
+        <Glass style={{marginBottom:20,padding:"24px 22px"}}>
+          <div style={{fontSize:".88rem",color:"#e8a0b0",letterSpacing:".12em",marginBottom:16}}>❖ 婚姻與愛情藍圖</div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)"}}>
+            {b.dmEl==="木"?"在愛情中，你是那棵願意為對方遮風擋雨的大樹。你的愛深沉而持久，不會輕易說出口，卻會用行動默默守護。你最理想的伴侶是能讓你安心展露脆弱的人——不是需要你保護的人，而是能與你並肩而立的人。你在感情中最大的課題是「表達需求」：你太習慣給予，卻忘了自己也值得被照顧。當你學會開口說「我需要你」，你的親密關係將會迎來質的飛躍。桃花較旺的時節通常在春夏之交，水元素旺的年份容易遇到心動的對象。":b.dmEl==="火"?"在愛情中，你是那盞為對方點亮整個世界的燭火。你的愛熱烈而直接，墜入愛河時全世界都看得出來。你最理想的伴侶是能包容你的情緒波動、又不會被你的光芒灼傷的人。你在感情中最大的課題是「保持自我」：你太容易在愛中迷失自己，把所有能量都燃燒給對方。記住，最健康的愛情是兩盞燭火互相輝映，而不是一方燃盡自己去照亮另一方。金元素旺的年份感情較穩定，秋季容易遇到靈魂伴侶的線索。":b.dmEl==="土"?"在愛情中，你是那片讓對方感到安全的大地。你的愛溫暖而包容，不管對方經歷什麼風暴，在你身邊總能找到安定。你最理想的伴侶是能主動靠近你、打開你心門的人——因為你太擅長把自己封閉在堅固的城牆裡。你在感情中最大的課題是「允許被愛」：你總覺得自己要先變得足夠好才值得被愛，但真正愛你的人，愛的就是此刻不完美的你。火元素旺的年份桃花運最旺，夏季的社交場合容易邂逅有緣人。":b.dmEl==="金"?"在愛情中，你是那把鋒利卻溫柔的劍。你對伴侶的要求很高，因為你對自己的要求也一樣高。你最理想的伴侶是能欣賞你的銳利、同時軟化你的稜角的人。你在感情中最大的課題是「接受不完美」：你有時會因為對方的一個小缺點就想放棄整段關係。但完美的愛情不存在，完美的默契是磨合出來的。當你放下評判、學會欣賞差異，你會發現愛情比你想像的更溫柔。水元素旺的年份情感最豐沛，冬季是你反思和深化關係的最佳時期。":"在愛情中，你是那座深不見底的湖泊。你的愛深邃而神秘，對方永遠猜不透你心裡在想什麼，這既是你的魅力，也是你的困擾。你最理想的伴侶是有耐心慢慢走進你內心的人——不是強行闖入，而是願意在湖邊安靜等待的人。你在感情中最大的課題是「信任」：你太害怕受傷，所以築起層層防線。但真正的親密需要冒險。木元素旺的年份感情有新的萌芽，春季是展開新關係的好時機。"}
+          </div>
+          <div style={{marginTop:14,padding:"14px 16px",borderRadius:12,background:"rgba(232,160,176,.06)",borderLeft:"3px solid rgba(232,160,176,.25)"}}>
+            <div style={{fontSize:".82rem",color:"#e8a0b0",fontWeight:600,marginBottom:6}}>✦ 愛情能量提示</div>
+            <div style={{fontSize:".88rem",lineHeight:1.9,color:"rgba(255,255,255,.78)"}}>
+              {b.dmEl==="木"?"佩戴粉水晶或草莓晶能柔化你的木質剛性，增添柔情。約會時選擇有綠意的戶外場所，是你最自然放鬆的環境。":b.dmEl==="火"?"佩戴月光石能平衡你過於熾熱的情感能量。約會時避免太過刺激的場所，選擇能靜靜對話的空間更能展現你的深度。":b.dmEl==="土"?"佩戴紅紋石能打開你封閉的心輪。嘗試主動分享你的感受，哪怕只是一句「今天想你了」，都能讓關係升溫。":b.dmEl==="金"?"佩戴粉碧璽能軟化你的完美主義傾向。試著在約會時放下手機和待辦清單，全然地活在當下。":"佩戴海藍寶能幫助你表達深藏的情感。寫一封手寫信給重要的人，文字是你最擅長的愛的語言。"}
+            </div>
+          </div>
+        </Glass>
+        {/* ══ 區塊六：家庭 ══ */}
+        <Glass style={{marginBottom:20,padding:"24px 22px"}}>
+          <div style={{fontSize:".88rem",color:"#a0c8a0",letterSpacing:".12em",marginBottom:16}}>◇ 家庭與根源能量</div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)"}}>
+            {b.dmEl==="木"?"你的家庭能量根植於「生長」的主題。在原生家庭中，你可能是那個默默承擔責任的角色——像一棵小樹苗過早地學會了支撐。這份早熟讓你比同齡人更成熟穩重，但也可能讓你在內心深處藏著一個渴望被照顧的小孩。在你未來建立的家庭中，你會是溫柔而堅定的存在。你的孩子（或未來的孩子）會在你身上學到什麼叫做「安全感」。但請記住，最好的家庭教育不是犧牲自己，而是讓家人看到一個活得自在的你。":b.dmEl==="火"?"你的家庭能量圍繞著「溫暖」的主題。在原生家庭中，你可能是氣氛調節者——家裡有你在就不會冷場。但這也意味著你從小就學會了察言觀色，用自己的光去填補家庭裡的暗角。在你未來建立的家庭中，你會創造一個充滿歡笑和儀式感的家。你相信節日要好好過、生日要有驚喜、平凡的日子也要有小確幸。但別忘了，偶爾讓家人也來照顧你的情緒，你不需要永遠是那個發光的人。":b.dmEl==="土"?"你的家庭能量建立在「穩定」的基石上。在原生家庭中，你可能是所有人的依靠——不管發生什麼事，家人第一個想到的就是你。這份被需要感讓你感到存在的價值，但有時也會成為沉重的負擔。在你未來建立的家庭中，你會打造一個溫馨而有秩序的港灣。你重視傳統、珍惜團聚，週末的家庭餐桌對你來說比任何社交場合都重要。但別把「為家人好」當成控制的藉口，最好的愛是給彼此自由生長的空間。":b.dmEl==="金"?"你的家庭能量聚焦於「教養」的主題。在原生家庭中，你可能經歷了嚴格的管教或高標準的期望——這塑造了你追求卓越的性格，但也可能讓你對「不夠好」有深層的恐懼。在你未來建立的家庭中，你會是有原則、有底線的家長或伴侶。你的家規清晰，對孩子的教育有明確的方向。但請記住，比起完美的成績單，孩子更需要的是一個會說「沒關係，我愛你本來的樣子」的父母。":"你的家庭能量流動於「理解」的主題。在原生家庭中，你可能是最敏感的那個——家裡的情緒暗流，你全都感受得到。這份敏銳讓你很早就學會了閱讀空氣，但也可能讓你承受了不該承受的情緒重量。在你未來建立的家庭中，你會創造一個重視心靈交流的空間。你不在乎房子多大、車子多好，你在乎的是「家人之間能不能說真話」。你的直覺會讓你成為最懂孩子心事的父母，但記得也要教他們面對現實的勇氣。"}
+          </div>
+          <div style={{marginTop:14,padding:"14px 16px",borderRadius:12,background:"rgba(160,200,160,.06)",borderLeft:"3px solid rgba(160,200,160,.25)"}}>
+            <div style={{fontSize:".82rem",color:"#a0c8a0",fontWeight:600,marginBottom:6}}>✦ 家庭和諧小儀式</div>
+            <div style={{fontSize:".88rem",lineHeight:1.9,color:"rgba(255,255,255,.78)"}}>
+              {b.dmEl==="木"?"在家中東方擺放一盆生命力旺盛的綠色植物，象徵家庭的持續生長。每週安排一次「不談責任」的家庭時光，單純享受在一起的快樂。":b.dmEl==="火"?"在客廳點一盞暖色調的燈或蠟燭，讓家的溫度看得見。建立一個家庭傳統——可以是週五電影夜，也可以是每月一次的家庭手作時間。":b.dmEl==="土"?"在餐桌上擺放一個陶製花瓶，象徵家的穩固根基。每週至少一次全家共餐，不看手機、不談工作，只專注於彼此。":b.dmEl==="金"?"在家中西方放置一件金屬或白色水晶擺件，象徵清明的家庭能量。學習用「我覺得…」代替「你應該…」來表達對家人的期望。":"在家中北方放置一個小型流水擺設，象徵家庭情感的流動。建立「心情分享」的睡前儀式，讓每個家人都有被聽見的機會。"}
+            </div>
+          </div>
+        </Glass>
+        {/* ══ 區塊七：貴人運 ══ */}
+        <Glass style={{marginBottom:20,padding:"24px 22px"}}>
+          <div style={{fontSize:".88rem",color:"#a0b8e0",letterSpacing:".12em",marginBottom:16}}>☆ 貴人與機緣地圖</div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)"}}>
+            {b.dmEl==="木"?"你的貴人往往是「水」屬性的人——他們滋養你、支持你的成長，卻不求回報。在生活中，這類貴人可能是那些思維靈活、情感豐富的人：心理諮詢師、藝術家、研究學者，或者是那個總是在你迷茫時打電話給你的老友。你的貴人方位在北方，水元素旺的季節（冬季）容易遇到生命中的關鍵助力。值得注意的是，你的貴人不一定是地位比你高的人——有時候一個真誠的晚輩或學生，反而能帶給你最重要的人生啟發。":b.dmEl==="火"?"你的貴人往往是「木」屬性的人——他們像燃料一樣助你燃燒得更旺。在生活中，這類貴人可能是有遠見的導師、充滿生命力的創業者，或者是那些不斷鼓勵你「再大膽一點」的朋友。你的貴人方位在東方，木元素旺的季節（春季）最容易遇到改變你命運的人。你的人際磁場本就很強，但真正的貴人不是被你的光吸引來的粉絲，而是能在你燃燒殆盡時遞上柴火的人。":b.dmEl==="土"?"你的貴人往往是「火」屬性的人——他們點燃你的熱情、喚醒你沉睡的行動力。在生活中，這類貴人可能是充滿幹勁的領導者、敢衝敢闖的開拓者，或者是那個總是說「走吧，試試看」的冒險型朋友。你的貴人方位在南方，火元素旺的季節（夏季）機緣最多。你的穩重會讓很多人信任你，但你需要的貴人不是更多讓你承擔的人，而是能推動你走出舒適圈的人。":b.dmEl==="金"?"你的貴人往往是「土」屬性的人——他們用包容和耐心軟化你的銳利。在生活中，這類貴人可能是溫和的長輩、踏實的合作夥伴，或者是那個在你過於嚴苛時輕輕說「別太為難自己」的人。你的貴人方位在中央和西南方，土元素旺的季節（四季交替之際）容易遇到命中的助力。別把貴人想像成帶你飛的人——對你來說，能讓你慢下來、柔軟下來的人，才是真正的貴人。":"你的貴人往往是「金」屬性的人——他們用清晰的邏輯幫你理清混沌的思緒。在生活中，這類貴人可能是做事有條理的專業人士、嚴謹但公正的導師，或者是那個在你飄忽不定時幫你做決定的果斷朋友。你的貴人方位在西方，金元素旺的季節（秋季）容易迎來重要的人生轉機。你的直覺很強，但有時候會因為選擇太多而陷入猶豫——你的貴人就是那個幫你「一刀切下去」的人。"}
+          </div>
+          <div style={{display:"flex",gap:10,marginTop:14,flexWrap:"wrap"}}>
+            {(b.dmEl==="木"?[["☽","水系貴人"],["◎","北方"],["❆","冬季"]]:b.dmEl==="火"?[["❋","木系貴人"],["◎","東方"],["❀","春季"]]:b.dmEl==="土"?[["◆","火系貴人"],["◎","南方"],["✺","夏季"]]:b.dmEl==="金"?[["◈","土系貴人"],["◎","西南"],["❋","季節交替"]]:b.dmEl==="水"?[["☩","金系貴人"],["◎","西方"],["❆","秋季"]]:[]).map(([ic,lb],i)=><div key={i} style={{flex:1,minWidth:80,textAlign:"center",padding:"10px 8px",borderRadius:10,background:"rgba(160,184,224,.06)",border:"1px solid rgba(160,184,224,.15)"}}><div style={{fontSize:"1.1rem",marginBottom:4,color:"inherit",textShadow:"0 0 8px currentColor",opacity:.7}}>{ic}</div><div style={{fontSize:".78rem",color:"#a0b8e0",fontWeight:600}}>{lb}</div></div>)}
+          </div>
+          <div style={{marginTop:14,padding:"14px 16px",borderRadius:12,background:"rgba(160,184,224,.06)",borderLeft:"3px solid rgba(160,184,224,.25)"}}>
+            <div style={{fontSize:".82rem",color:"#a0b8e0",fontWeight:600,marginBottom:6}}>✦ 招貴人秘訣</div>
+            <div style={{fontSize:".88rem",lineHeight:1.9,color:"rgba(255,255,255,.78)"}}>
+              {b.dmEl==="木"?"主動參加讀書會或身心靈社群，你的貴人常出現在知識交流的場合。隨身攜帶藍色系飾品能增強貴人磁場。":b.dmEl==="火"?"多參與戶外活動或創業社群，你的貴人常出現在充滿活力的場合。在東方窗台放一盆生長旺盛的植物能催旺貴人運。":b.dmEl==="土"?"嘗試參加需要走出舒適圈的活動或工作坊，你的貴人常出現在你「不太習慣」的場合。佩戴紅色系飾品能增強貴人緣。":b.dmEl==="金"?"多出席溫馨的聚會場合而非競爭性活動，你的貴人常出現在放鬆的環境中。在辦公桌放一個陶製小物能穩定貴人磁場。":"定期整理和清潔你的居住環境，乾淨有序的空間能招來金系貴人。佩戴白水晶或銀色飾品能增強你的貴人運。"}
+            </div>
+          </div>
+        </Glass>
+        {/* ══ 區塊八：流年指引 ══ */}
+        <Glass style={{padding:"28px 22px",background:"linear-gradient(135deg,rgba(212,165,116,.05),rgba(180,130,180,.05))"}}>
+          <div style={{textAlign:"center",marginBottom:16}}>
+            <div style={{fontSize:"1.6rem",marginBottom:8,color:C.rose,textShadow:"0 0 20px rgba(176,112,128,.3)"}}>✧</div>
+            <div style={{fontSize:".88rem",color:C.rose,letterSpacing:".12em"}}>寫給 {yr} 年的你</div>
+          </div>
+          <div style={{textAlign:"center",marginBottom:16}}>
+            <div style={{fontSize:".82rem",color:"rgba(255,255,255,.55)",marginBottom:6}}><TT setTtip={setTtip} term="流年" def="每一年的天干地支組成的能量場，會與你的命盤產生獨特的共振，影響這一年的主要課題和機遇。">流年</TT>年度關鍵字</div>
+            <div style={{display:"inline-block",padding:"10px 28px",borderRadius:22,background:"rgba(212,165,116,.1)",border:"1.5px solid rgba(212,165,116,.35)",fontSize:"1.25rem",fontWeight:700,color:C.gold,letterSpacing:".22em"}}>{b.fortuneKW}</div>
+          </div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.85)",textAlign:"center",marginBottom:18}}>
+            今年的宇宙能量主題是「{b.fortuneKW}」。{b.lySS==="七殺"?"這是一個破舊立新的年份，過去拖住你的一切，今年都可以勇敢放手。":b.lySS==="傷官"?"你的創造力將在今年達到巔峰，勇敢表達內心的聲音。":b.lySS==="正印"?"今年適合沉澱和學習，回到內心最真實的渴望。":b.lySS==="食神"?"今年的你值得好好享受生活，幸福會從微小的日常中綻放。":"今年是蓄力的一年，每一步都在為未來的綻放鋪路。"}
+          </div>
+          <div style={{fontSize:".85rem",color:C.gold,letterSpacing:".1em",marginBottom:10,textAlign:"center"}}>三個微小行動指南</div>
+          <div style={{display:"flex",flexDirection:"column",gap:10}}>
+            {fortuneActions.map((a,i)=><div key={i} style={{display:"flex",alignItems:"flex-start",gap:10,padding:"10px 14px",borderRadius:10,background:"rgba(255,255,255,.025)"}}><span style={{fontSize:".92rem",color:C.gold,fontWeight:700,minWidth:20}}>{i+1}.</span><span style={{fontSize:".92rem",lineHeight:1.9,color:"rgba(255,255,255,.85)"}}>{a}</span></div>)}
+          </div>
+        </Glass>
+      </div>
+      {ttip&&<div onClick={()=>setTtip(null)} style={{position:"fixed",inset:0,zIndex:99998}}><div style={{position:"fixed",top:ttip.top,left:ttip.left,background:"rgba(18,14,28,.97)",border:"1px solid rgba(212,165,116,.4)",borderRadius:12,padding:"14px 18px",fontSize:".88rem",lineHeight:1.9,color:"rgba(255,255,255,.9)",width:260,zIndex:99999,boxShadow:"0 8px 36px rgba(0,0,0,.75)"}} onClick={e=>e.stopPropagation()}><div style={{color:C.gold,fontWeight:600,fontSize:".85rem",marginBottom:6}}>{ttip.term}</div>{ttip.def}</div></div>}
+      <style>{CSS}</style>
     </div>);
   }
   // ── FORTUNE PAGE ──
   if(page==="fortune"){
     return(<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt}}><Stars/><Nav/>
       <div style={{maxWidth:480,margin:"0 auto",padding:"30px 16px 40px",position:"relative",zIndex:1}}>
-        <PB icon="🏮" title="線上擲筊求籤"/>
+        <PB icon="☰" title="線上擲筊求籤"/>
         <div style={{textAlign:"center",marginBottom:20}}>
           <div style={{fontSize:"1.4rem",fontWeight:700,color:C.gold,letterSpacing:".1em"}}>行天宮線上求籤</div>
           <div style={{fontSize:".74rem",color:C.txt2,marginTop:4}}>心誠則靈，擲出聖筊方可取籤</div>
@@ -653,4 +987,4 @@ export default function App(){
   </div>);
 }
 
-const CSS=`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&display=swap');*{box-sizing:border-box;margin:0;padding:0}input:focus,select:focus,textarea:focus,button:focus{outline:none}button:hover{filter:brightness(1.08)}::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}::-webkit-scrollbar-thumb{background:rgba(212,165,116,.15);border-radius:2px}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes glow{0%,100%{filter:brightness(1) drop-shadow(0 0 8px rgba(212,165,116,.2))}50%{filter:brightness(1.2) drop-shadow(0 0 16px rgba(212,165,116,.4))}}@keyframes tubeshake{0%{transform:translateX(-50%) rotate(-2deg)}100%{transform:translateX(-50%) rotate(2deg)}}@keyframes stickshake{0%{transform:translateX(-50%) rotate(var(--base-angle,0deg)) translateY(0)}100%{transform:translateX(-50%) rotate(calc(var(--base-angle,0deg) + 3deg)) translateY(-6px)}}@keyframes stickrise{0%{transform:translateX(-50%) translateY(0)}30%{transform:translateX(-50%) translateY(-8px)}60%{transform:translateX(-50%) translateY(-80px)}100%{transform:translateX(-50%) translateY(-110px)}}@keyframes dotpulse{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:.8;transform:scale(1.2)}}select option{background:#1a1428}`;
+const CSS=`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&display=swap');*{box-sizing:border-box;margin:0;padding:0}input:focus,select:focus,textarea:focus,button:focus{outline:none}button:hover{filter:brightness(1.08)}::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}::-webkit-scrollbar-thumb{background:rgba(212,165,116,.15);border-radius:2px}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes glow{0%,100%{filter:brightness(1) drop-shadow(0 0 8px rgba(212,165,116,.2))}50%{filter:brightness(1.2) drop-shadow(0 0 16px rgba(212,165,116,.4))}}@keyframes tubeshake{0%{transform:translateX(-50%) rotate(-2deg)}100%{transform:translateX(-50%) rotate(2deg)}}@keyframes stickshake{0%{transform:translateX(-50%) rotate(var(--base-angle,0deg)) translateY(0)}100%{transform:translateX(-50%) rotate(calc(var(--base-angle,0deg) + 3deg)) translateY(-6px)}}@keyframes stickrise{0%{transform:translateX(-50%) translateY(0)}30%{transform:translateX(-50%) translateY(-8px)}60%{transform:translateX(-50%) translateY(-80px)}100%{transform:translateX(-50%) translateY(-110px)}}@keyframes dotpulse{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:.8;transform:scale(1.2)}}@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}@keyframes cardShuffle{0%{transform:translateX(-30px) rotate(-8deg)}100%{transform:translateX(30px) rotate(8deg)}}@keyframes cardLift{0%{transform:translateY(0);box-shadow:0 4px 20px rgba(0,0,0,.5)}100%{transform:translateY(-40px);box-shadow:0 16px 50px rgba(180,130,180,.25),0 0 80px rgba(180,130,180,.1)}}@keyframes cardFlip{0%{transform:rotateY(0)}100%{transform:rotateY(180deg)}}@keyframes coinSpin{0%{transform:translateY(0) rotateX(0)}100%{transform:translateY(-12px) rotateX(180deg)}}select option{background:#1a1428}`;
