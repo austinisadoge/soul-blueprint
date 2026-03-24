@@ -475,7 +475,84 @@ const IChingDraw=({phase,hex,onDraw,onRedraw})=>{
   return null;
 };
 export default function App(){
-  const[page,setPage]=useState("input"); // input, home, ziwei, bazi, zodiac, lifepath, humandesign, mayan, fortune
+  const[page,setPage]=useState("input");
+  const nebulaRef=useRef(null);const[nebulaBg,setNebulaBg]=useState(null); // input, home, ziwei, bazi, zodiac, lifepath, humandesign, mayan, fortune
+  /* Generate high-res nebula texture once on mount */
+  useEffect(()=>{
+    const W=800,H=1400;
+    const c=document.createElement("canvas");c.width=W;c.height=H;
+    const x=c.getContext("2d");
+    /* Black base */
+    x.fillStyle="#0c0814";x.fillRect(0,0,W,H);
+    /* Noise function for organic texture */
+    const noise=(px,py,sc)=>{const v=Math.sin(px*sc*12.9898+py*sc*78.233)*43758.5453;return v-Math.floor(v)};
+    /* Paint nebula in layers using many small semi-transparent circles */
+    const paintCloud=(cx,cy,rx,ry,r,g,b,maxA,count)=>{
+      for(let i=0;i<count;i++){
+        const ang=Math.random()*Math.PI*2;
+        const dist=Math.pow(Math.random(),.6);
+        const px=cx+Math.cos(ang)*dist*rx+(Math.random()-.5)*rx*.3;
+        const py=cy+Math.sin(ang)*dist*ry+(Math.random()-.5)*ry*.3;
+        const sz=Math.random()*rx*.18+4;
+        const a=maxA*(1-dist*.8)*(Math.random()*.5+.5);
+        const g2=x.createRadialGradient(px,py,0,px,py,sz);
+        g2.addColorStop(0,`rgba(${r},${g},${b},${a})`);
+        g2.addColorStop(1,"transparent");
+        x.fillStyle=g2;x.fillRect(px-sz,py-sz,sz*2,sz*2);
+      }
+    };
+    x.globalCompositeOperation="screen";
+    /* Layer 1: Large purple nebula - upper left */
+    paintCloud(W*.35,H*.28,W*.45,H*.2,160,50,180,.12,800);
+    paintCloud(W*.35,H*.28,W*.3,H*.12,200,80,220,.08,400);
+    /* Layer 2: Bright magenta/pink band across center */
+    paintCloud(W*.4,H*.38,W*.5,H*.08,220,100,190,.15,600);
+    paintCloud(W*.45,H*.35,W*.4,H*.06,255,140,220,.1,300);
+    /* Layer 3: Secondary pink swirl - lower */
+    paintCloud(W*.3,H*.52,W*.45,H*.07,200,90,170,.1,500);
+    /* Layer 4: Bright core hotspot */
+    paintCloud(W*.38,H*.35,W*.12,H*.06,255,160,230,.2,300);
+    paintCloud(W*.38,H*.35,W*.06,H*.03,255,200,240,.15,150);
+    /* Layer 5: Gold nebula - bottom right */
+    paintCloud(W*.65,H*.72,W*.35,H*.18,240,200,120,.12,600);
+    paintCloud(W*.6,H*.75,W*.25,H*.12,255,220,140,.08,400);
+    /* Layer 6: Gold accent bottom left */
+    paintCloud(W*.25,H*.82,W*.3,H*.1,230,190,110,.1,400);
+    /* Layer 7: Subtle blue-purple lower area */
+    paintCloud(W*.5,H*.6,W*.5,H*.15,100,60,160,.05,300);
+    /* Stars - many tiny bright dots */
+    x.globalCompositeOperation="screen";
+    for(let i=0;i<600;i++){
+      const sx=Math.random()*W,sy=Math.random()*H;
+      const bright=Math.random();
+      const sz=bright>.95?2:bright>.8?1.2:.6;
+      const a=bright>.9?.8:bright>.6?.4:.15;
+      x.fillStyle=bright>.7?`rgba(255,240,220,${a})`:`rgba(220,220,255,${a})`;
+      x.beginPath();x.arc(sx,sy,sz,0,6.28);x.fill();
+      /* Cross flare on brightest */
+      if(bright>.93){
+        x.strokeStyle=`rgba(255,240,220,${a*.3})`;x.lineWidth=.5;
+        x.beginPath();x.moveTo(sx-sz*4,sy);x.lineTo(sx+sz*4,sy);x.stroke();
+        x.beginPath();x.moveTo(sx,sy-sz*4);x.lineTo(sx,sy+sz*4);x.stroke();
+      }
+    }
+    /* Dense golden sparkle cluster at bottom 30% */
+    for(let i=0;i<300;i++){
+      const sx=Math.random()*W,sy=H*.65+Math.random()*H*.35;
+      const bright=Math.random();
+      const sz=bright>.9?2.5:bright>.7?1.5:.8;
+      const a=bright>.8?.7:bright>.5?.35:.15;
+      x.fillStyle=`rgba(255,${220+Math.random()*30},${140+Math.random()*60},${a})`;
+      x.beginPath();x.arc(sx,sy,sz,0,6.28);x.fill();
+      if(bright>.88){
+        x.strokeStyle=`rgba(255,225,160,${a*.25})`;x.lineWidth=.4;
+        const fl=sz*3.5;
+        x.beginPath();x.moveTo(sx-fl,sy);x.lineTo(sx+fl,sy);x.stroke();
+        x.beginPath();x.moveTo(sx,sy-fl);x.lineTo(sx,sy+fl);x.stroke();
+      }
+    }
+    setNebulaBg(c.toDataURL("image/jpeg",.92));
+  },[]);
   const[bY,sBY]=useState(1996),[bM,sBM]=useState(3),[bD,sBD]=useState(15),[bH,sBH]=useState(8);
   const[gen,sGen]=useState("female"),[cal,sCal]=useState("solar");
   /* Dynamic max days for selected year/month */
@@ -700,84 +777,6 @@ ${lySH[0]}化祿、${lySH[1]}化權、${lySH[2]}化科、${lySH[3]}化忌
   }
   // ── INPUT PAGE ──
   if(page==="input"){
-    const bgRef=useRef(null);
-    const [nebulaBg,setNebulaBg]=useState(null);
-    /* Generate high-res nebula texture once on mount */
-    useEffect(()=>{
-      const W=800,H=1400;
-      const c=document.createElement("canvas");c.width=W;c.height=H;
-      const x=c.getContext("2d");
-      /* Black base */
-      x.fillStyle="#0c0814";x.fillRect(0,0,W,H);
-      /* Noise function for organic texture */
-      const noise=(px,py,sc)=>{const v=Math.sin(px*sc*12.9898+py*sc*78.233)*43758.5453;return v-Math.floor(v)};
-      /* Paint nebula in layers using many small semi-transparent circles */
-      const paintCloud=(cx,cy,rx,ry,r,g,b,maxA,count)=>{
-        for(let i=0;i<count;i++){
-          const ang=Math.random()*Math.PI*2;
-          const dist=Math.pow(Math.random(),.6);
-          const px=cx+Math.cos(ang)*dist*rx+(Math.random()-.5)*rx*.3;
-          const py=cy+Math.sin(ang)*dist*ry+(Math.random()-.5)*ry*.3;
-          const sz=Math.random()*rx*.18+4;
-          const a=maxA*(1-dist*.8)*(Math.random()*.5+.5);
-          const g2=x.createRadialGradient(px,py,0,px,py,sz);
-          g2.addColorStop(0,`rgba(${r},${g},${b},${a})`);
-          g2.addColorStop(1,"transparent");
-          x.fillStyle=g2;x.fillRect(px-sz,py-sz,sz*2,sz*2);
-        }
-      };
-      x.globalCompositeOperation="screen";
-      /* Layer 1: Large purple nebula - upper left */
-      paintCloud(W*.35,H*.28,W*.45,H*.2,160,50,180,.12,800);
-      paintCloud(W*.35,H*.28,W*.3,H*.12,200,80,220,.08,400);
-      /* Layer 2: Bright magenta/pink band across center */
-      paintCloud(W*.4,H*.38,W*.5,H*.08,220,100,190,.15,600);
-      paintCloud(W*.45,H*.35,W*.4,H*.06,255,140,220,.1,300);
-      /* Layer 3: Secondary pink swirl - lower */
-      paintCloud(W*.3,H*.52,W*.45,H*.07,200,90,170,.1,500);
-      /* Layer 4: Bright core hotspot */
-      paintCloud(W*.38,H*.35,W*.12,H*.06,255,160,230,.2,300);
-      paintCloud(W*.38,H*.35,W*.06,H*.03,255,200,240,.15,150);
-      /* Layer 5: Gold nebula - bottom right */
-      paintCloud(W*.65,H*.72,W*.35,H*.18,240,200,120,.12,600);
-      paintCloud(W*.6,H*.75,W*.25,H*.12,255,220,140,.08,400);
-      /* Layer 6: Gold accent bottom left */
-      paintCloud(W*.25,H*.82,W*.3,H*.1,230,190,110,.1,400);
-      /* Layer 7: Subtle blue-purple lower area */
-      paintCloud(W*.5,H*.6,W*.5,H*.15,100,60,160,.05,300);
-      /* Stars - many tiny bright dots */
-      x.globalCompositeOperation="screen";
-      for(let i=0;i<600;i++){
-        const sx=Math.random()*W,sy=Math.random()*H;
-        const bright=Math.random();
-        const sz=bright>.95?2:bright>.8?1.2:.6;
-        const a=bright>.9?.8:bright>.6?.4:.15;
-        x.fillStyle=bright>.7?`rgba(255,240,220,${a})`:`rgba(220,220,255,${a})`;
-        x.beginPath();x.arc(sx,sy,sz,0,6.28);x.fill();
-        /* Cross flare on brightest */
-        if(bright>.93){
-          x.strokeStyle=`rgba(255,240,220,${a*.3})`;x.lineWidth=.5;
-          x.beginPath();x.moveTo(sx-sz*4,sy);x.lineTo(sx+sz*4,sy);x.stroke();
-          x.beginPath();x.moveTo(sx,sy-sz*4);x.lineTo(sx,sy+sz*4);x.stroke();
-        }
-      }
-      /* Dense golden sparkle cluster at bottom 30% */
-      for(let i=0;i<300;i++){
-        const sx=Math.random()*W,sy=H*.65+Math.random()*H*.35;
-        const bright=Math.random();
-        const sz=bright>.9?2.5:bright>.7?1.5:.8;
-        const a=bright>.8?.7:bright>.5?.35:.15;
-        x.fillStyle=`rgba(255,${220+Math.random()*30},${140+Math.random()*60},${a})`;
-        x.beginPath();x.arc(sx,sy,sz,0,6.28);x.fill();
-        if(bright>.88){
-          x.strokeStyle=`rgba(255,225,160,${a*.25})`;x.lineWidth=.4;
-          const fl=sz*3.5;
-          x.beginPath();x.moveTo(sx-fl,sy);x.lineTo(sx+fl,sy);x.stroke();
-          x.beginPath();x.moveTo(sx,sy-fl);x.lineTo(sx,sy+fl);x.stroke();
-        }
-      }
-      setNebulaBg(c.toDataURL("image/jpeg",.92));
-    },[]);
     return(<div style={{minHeight:"100vh",fontFamily:"'Noto Serif SC','STSong',serif",color:"#e8dcc8",position:"relative",overflow:"hidden",background:"#0c0814"}}>
       {/* Pre-rendered nebula background */}
       {nebulaBg&&<div style={{position:"absolute",inset:"-5%",zIndex:0,backgroundImage:`url(${nebulaBg})`,backgroundSize:"cover",backgroundPosition:"center",animation:"nebulaSway 30s ease-in-out infinite alternate"}}/>}
