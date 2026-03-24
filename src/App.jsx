@@ -31,7 +31,7 @@ const MTN=["磁性","月亮","電力","自我存在","超頻","韻律","共振",
 const MDS={"紅龍":{c:"滋養與誕生",d:"孕育新開始的力量",g:"信任生命會照顧你",pw:"原始信任",ch:"過度照顧而忽略自己"},"白風":{c:"溝通與靈感",d:"宇宙訊息的傳遞者",g:"真實的表達是你的力量",pw:"呼吸與靈感",ch:"散漫缺乏方向"},"藍夜":{c:"豐盛與夢境",d:"透過夢接收宇宙訊息",g:"相信你的夢想",pw:"豐盛顯化",ch:"過度沉浸幻想"},"黃種子":{c:"開花與目標",d:"每個決定都會綻放",g:"最美的花需要最長時間",pw:"耐心與信念",ch:"過度期待結果"},"紅蛇":{c:"生命力與本能",d:"強大的生存智慧",g:"信任你的身體直覺",pw:"生命力",ch:"恐懼與執著"},"白世界橋":{c:"連接與放下",d:"不同世界的橋樑",g:"放下才能得到",pw:"連結超越",ch:"害怕改變"},"藍手":{c:"療癒與知曉",d:"雙手擁有療癒能量",g:"用雙手去創造療癒",pw:"療癒之手",ch:"過度控制"},"黃星星":{c:"美與藝術",d:"感知宇宙的和諧",g:"把美帶入日常生活",pw:"藝術創造",ch:"追求完美"},"紅月":{c:"淨化與流動",d:"水般的療癒力",g:"讓情緒像水一樣流動",pw:"淨化療癒",ch:"情緒氾濫"},"白狗":{c:"愛與忠誠",d:"心輪特別強大",g:"先學會無條件愛自己",pw:"忠誠之愛",ch:"過度付出"},"藍猴":{c:"遊戲與幻象",d:"看穿表象的智慧",g:"別把人生看太嚴肅",pw:"幽默魔法",ch:"逃避責任"},"黃人":{c:"自由意志",d:"獨立思考的勇氣",g:"勇敢做自己的選擇",pw:"自由意志",ch:"過度自我"},"紅天行者":{c:"探索與空間",d:"靈魂渴望穿越時空",g:"保持好奇心",pw:"空間旅行",ch:"無法安定"},"白巫師":{c:"永恆與魔法",d:"穿透時間幻象",g:"活在當下就是永恆",pw:"超越時間",ch:"操控"},"藍鷹":{c:"視野與創造",d:"從高處俯瞰全局",g:"先看清全貌再行動",pw:"遠見",ch:"脫離現實"},"黃戰士":{c:"智勇與提問",d:"戰士般的求知慾",g:"勇敢質疑",pw:"無畏探索",ch:"過度好鬥"},"紅地球":{c:"同步與導航",d:"與地球深刻連結",g:"跟隨生命的徵兆",pw:"共時性",ch:"執著控制"},"白鏡":{c:"真相與無盡",d:"映照事物本質",g:"接受真相",pw:"清晰洞察",ch:"過度批判"},"藍風暴":{c:"轉化與自我生成",d:"改變的催化劑",g:"擁抱變化",pw:"徹底轉化",ch:"破壞性"},"黃太陽":{c:"生命與開悟",d:"太陽般的光明",g:"讓光自然照耀",pw:"開悟之光",ch:"自我中心"}};
 const MTD={"磁性":"統一吸引","月亮":"挑戰平衡","電力":"服務點亮","自我存在":"定義形式","超頻":"賦予力量","韻律":"組織平衡","共振":"連結通道","銀河":"整合完整","太陽":"意圖實現","行星":"完美顯化","光譜":"自由釋放","水晶":"合作凝聚","宇宙":"超越完成"};
 function getMayan(y,m,d){const diff=Math.floor((new Date(y,m-1,d)-new Date(2006,0,14))/864e5);const k=((diff%260)+260)%260;const seal=MSL[k%20],tone=MTN[k%13];return{seal,tone,kin:k+1,d:MDS[seal],td:MTD[tone],guide:MSL[(k%20+12)%20],anti:MSL[(k%20+10)%20],occ:MSL[(k%20+18)%20]}}
-function getBazi(y,m,d,h){const ysi=(y-4)%10,ybi=(y-4)%12,base=Math.floor((Date.UTC(y,m-1,d)-Date.UTC(1900,0,7))/864e5),dsi=((base%10)+10)%10;const WX=["木","木","火","火","土","土","金","金","水","水"],dm=WX[dsi],yEl=WX[ysi];
+function getBazi(y,m,d,h,solarY,solarM,solarD){const sy=solarY||y,sm=solarM||m,sd=solarD||d;const ysi=(y-4)%10,ybi=(y-4)%12,base=Math.floor((Date.UTC(sy,sm-1,sd)-Date.UTC(1900,0,7))/864e5),dsi=((base%10)+10)%10;const WX=["木","木","火","火","土","土","金","金","水","水"],dm=WX[dsi],yEl=WX[ysi];
   // Five element strengths based on pillars
   const wx5={木:0,火:0,土:0,金:0,水:0};wx5[dm]+=35;wx5[yEl]+=25;
   const mEl=WX[((ysi%5)*2+(m>1?m:m+12)-1)%10];wx5[mEl]+=20;
@@ -77,7 +77,7 @@ function gWJ(si,bi){const t=[[2,6,5,3,4],[6,5,3,4,2],[5,3,4,2,6],[3,4,2,6,5],[4,
 function gLP2(lm,sc){return(14-sc+lm-1)%12}
 function gZP(ld,jv){let q=Math.ceil(ld/jv),r=ld%jv;if(r===0)return(2+q-1)%12;return(((q%2===0?(2+q+r-1):(2+q-r+jv-1))%12)+12)%12}
 function genChart(bY,bM,bD,bH,isLunar){
-  const lu=isLunar?{year:bY,month:bM,day:bD}:s2l(bY,bM,bD),sc=getSC(bH),ysi=(bY-4)%10,ybi=(bY-4)%12;
+  const lu=isLunar?{year:bY,month:bM,day:bD}:s2l(bY,bM,bD),sc=getSC(bH),ysi=(lu.year-4)%10,ybi=(lu.year-4)%12;
   const lpp=gLP2(lu.month,sc),psi=((ysi%5)*2+2+lpp-2+20)%10;
   const ju=gWJ(psi,lpp),zwp=gZP(lu.day,ju.value);
   const P=[];for(let i=0;i<12;i++){const pi=(lpp-i+12)%12;P.push({name:PN[i],branch:BR[pi],bi:pi,stars:[],ls:[],us:[],sh:[],bt:{}})}
@@ -88,7 +88,8 @@ function genChart(bY,bM,bD,bH,isLunar){
   Object.entries({"文昌":(10-sc+12)%12,"文曲":(sc+4)%12,"左輔":(4+lu.month-1)%12,"右弼":(10-lu.month+1+12)%12,"天魁":[1,0,3,3,1,0,7,2,3,3][ysi],"天鉞":[7,8,5,5,7,8,1,6,5,5][ysi]}).forEach(([s,pos])=>{const p=P.find(p=>p.bi===pos);if(p)p.ls.push(s)});
   Object.entries({"擎羊":(ysi+3)%12,"陀羅":(ysi+1)%12,"火星":(2+sc+ybi)%12,"鈴星":(10+sc+ybi)%12,"地空":(11-sc+12)%12,"地劫":(sc+11)%12}).forEach(([s,pos])=>{const p=P.find(p=>p.bi===pos);if(p)p.us.push(s)});
   SHT[ysi].forEach((star,idx)=>{const shn=["化祿","化權","化科","化忌"];P.forEach(p=>{if(p.stars.includes(star)||p.ls.includes(star))p.sh.push({name:shn[idx],star})})});
-  return{P,lu,sc,ysi,ybi,lpp,bpp:(lpp+sc)%12,zwp,ju,yg:ST[ysi]+BR[ybi],bY}
+  const solarBY=isLunar?l2s(bY,bM,bD).year:bY;
+  return{P,lu,sc,ysi,ybi,lpp,bpp:(lpp+sc)%12,zwp,ju,yg:ST[ysi]+BR[ybi],bY:solarBY}
 }
 function scoreP(p){let b=0,bo=0,pe=0;p.stars.forEach(s=>{const d=MJ[s];if(d){const m=BTM[p.bt[s]||"平"]||0.5;b+=d.b*m;bo+=d.b*.25}});p.ls.forEach(s=>{b+=(LST[s]||0);bo+=(LST[s]||0)*.4});p.us.forEach(s=>{b+=(UST[s]||0);pe+=Math.abs(UST[s]||0)*.4});p.sh.forEach(x=>{const v=SHV[x.name]||0;b+=v;if(v>0)bo+=v*.25;else pe+=Math.abs(v)*.25});const n=v=>Math.max(2,Math.min(98,Math.round((v-15)*45/55+50)));const op=n(b-bo),cl=n(b);return{open:op,close:cl,high:Math.max(op,cl,n(b+bo)),low:Math.min(op,cl,n(b-pe))}}
 function dimP(ch,d){switch(d){case"總運":return[ch.P[0],ch.P.find(p=>p.bi===ch.bpp),ch.P[10]].filter(Boolean);case"財運":return[ch.P[4],ch.P[10]];case"健康":return[ch.P[5]];case"感情":return[ch.P[2]];default:return[ch.P[0]]}}
@@ -477,41 +478,139 @@ export default function App(){
   const[page,setPage]=useState("input"); // input, home, ziwei, bazi, zodiac, lifepath, humandesign, mayan, fortune
   const[bY,sBY]=useState(1996),[bM,sBM]=useState(3),[bD,sBD]=useState(15),[bH,sBH]=useState(8);
   const[gen,sGen]=useState("female"),[cal,sCal]=useState("solar");
+  /* Dynamic max days for selected year/month */
+  const maxDays=useMemo(()=>{
+    if(cal==="lunar"){
+      /* lunar: use lookup table */
+      if(bY>=1900&&bY<=2100)return mmd(bY,bM);
+      return 30;
+    }else{
+      /* solar: standard Gregorian rules */
+      if([1,3,5,7,8,10,12].includes(bM))return 31;
+      if([4,6,9,11].includes(bM))return 30;
+      /* Feb: check leap year */
+      const leap=(bY%4===0&&bY%100!==0)||(bY%400===0);
+      return leap?29:28;
+    }
+  },[bY,bM,cal]);
+  useEffect(()=>{if(bD>maxDays)sBD(maxDays)},[maxDays,bD]);
   const[anim,sAnim]=useState(false);
   const[soul,setSoul]=useState(null); // all computed data
   const[ttip,setTtip]=useState(null);
   const[tarotCard,setTarotCard]=useState(null);const[tarotPhase,setTarotPhase]=useState("idle");
   const[ichingHex,setIchingHex]=useState(null);const[ichingPhase,setIchingPhase]=useState("idle");
   const[overlay,setOverlay]=useState(null); // null | "tarot" | "iching" | "fortune"
-  const[dim,sDim]=useState("總運"),[tm,sTm]=useState("一生");
+  const[zwTab,setZwTab]=useState(0);
+  const[aiReading,setAiReading]=useState(null);const[aiLoading,setAiLoading]=useState(false);
   const[cw,sCw]=useState(800);
   const cr=useRef(null);
   useEffect(()=>{const m=()=>{if(cr.current)sCw(Math.max(500,Math.min(1000,cr.current.offsetWidth-32)))};m();window.addEventListener("resize",m);return()=>window.removeEventListener("resize",m)},[]);
+
+  /* ── Call Claude API for deep ziwei reading ── */
+  const fetchAiReading=async(chartData)=>{
+    setAiLoading(true);setAiReading(null);
+    const{ziwei:ch,bazi:bz}=chartData;
+    const cy=new Date().getFullYear(),curAge=cy-ch.bY;
+    const juStart=ch.ju.value;
+    /* Build 大限 summary */
+    const dxSummary=[];
+    for(let i=0;i<7&&juStart+i*10<85;i++){
+      const sa=juStart+i*10,ea=Math.min(sa+9,84);
+      const pIdx=(ch.lpp+i)%12;
+      const p=ch.P.find(pp=>pp.bi===pIdx)||ch.P[i%12];
+      const isCur=curAge>=sa&&curAge<=ea;
+      const stars=[...p.stars,...p.ls].join("、")||"空宮";
+      const sha=p.us.join("、");
+      const sihua=p.sh.map(s=>`${s.star}${s.name}`).join("、");
+      dxSummary.push(`${sa}-${ea}歲（${ch.bY+sa}-${ch.bY+ea}）：${PN[ch.P.indexOf(p)]||PN[i%12]}（${BR[pIdx]}宮），主星=${stars}${sha?"，煞星="+sha:""}${sihua?"，四化="+sihua:""}${isCur?" ← 當前大限":""}`);
+    }
+    /* 流年四化 */
+    const lyYsi=((cy-4)%10+10)%10;
+    const lySH=SHT[lyYsi];
+    const prompt=`你是一位頂級紫微斗數命理師，擅長用溫暖、有深度、具有療癒感的語言解讀命盤。請根據以下命盤資料，生成深度個人化解讀。
+
+命盤基本資料：
+- 農曆出生年：${ch.yg}年
+- 五行局：${ch.ju.name}（${ch.ju.value}歲起運）
+- 命宮：${BR[ch.lpp]}宮
+- 身宮：${BR[ch.bpp]}宮
+- 日主五行：${bz.dmEl}
+- 性別：${chartData.gen||"未知"}
+- 目前年齡：約${curAge}歲
+- 生年四化：${SHT[ch.ysi][0]}化祿、${SHT[ch.ysi][1]}化權、${SHT[ch.ysi][2]}化科、${SHT[ch.ysi][3]}化忌
+
+十二宮星曜分佈：
+${ch.P.map((p,i)=>`${PN[i]}（${BR[p.bi]}）：主星=${p.stars.join("、")||"空宮"}，吉星=${p.ls.join("、")||"無"}，煞星=${p.us.join("、")||"無"}，四化=${p.sh.map(s=>s.star+s.name).join("、")||"無"}`).join("\n")}
+
+十年大限走勢：
+${dxSummary.join("\n")}
+
+${cy}年（${ST[lyYsi]}${BR[((cy-4)%12+12)%12]}年）流年四化：
+${lySH[0]}化祿、${lySH[1]}化權、${lySH[2]}化科、${lySH[3]}化忌
+
+請用繁體中文回覆，回覆格式為純JSON（不要markdown），結構如下：
+{
+  "liuNian": {
+    "overall": "整體運勢200字深度解讀",
+    "career": "事業運200字",
+    "wealth": "財運200字",
+    "love": "感情200字",
+    "health": "健康150字",
+    "quarterly": ["Q1 50字","Q2 50字","Q3 50字","Q4 50字"]
+  },
+  "daXian": ["第1個大限100字解讀","第2個大限100字","...每個大限都要"],
+  "peak": "200字結論，說明黃金大運何時來、現在該怎麼準備",
+  "bazi": {
+    "personality": "300字靈魂本質深度解讀",
+    "career": "200字財運事業解讀",
+    "love": "200字婚姻愛情解讀",
+    "family": "150字家庭解讀",
+    "noble": "150字貴人運解讀"
+  }
+}
+
+重要原則：
+1. 每段解讀都要具體引用命盤中的星曜和宮位，不能泛泛而談
+2. 語氣溫暖療癒，像跟朋友深談，不要冰冷的命理術語堆砌
+3. 負面的部分要轉化為成長建議和正面啟示
+4. 要有「啊這就是在說我」的個人化感覺`;
+    try{
+      const resp=await fetch("https://api.anthropic.com/v1/messages",{
+        method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:4000,
+          messages:[{role:"user",content:prompt}]})
+      });
+      const data=await resp.json();
+      const txt=data.content?.map(c=>c.text||"").join("")||"";
+      const clean=txt.replace(/```json|```/g,"").trim();
+      const parsed=JSON.parse(clean);
+      setAiReading(parsed);
+    }catch(e){console.error("AI reading error:",e);setAiReading(null);}
+    finally{setAiLoading(false);}
+  };
 
   const unlock=useCallback(()=>{
     sAnim(true);
     setTimeout(()=>{
       const isLunar=cal==="lunar";
-      // Solar dates (for zodiac, mayan, lifepath)
       const solar=isLunar?l2s(bY,bM,bD):{year:bY,month:bM,day:bD};
-      // Lunar dates (for bazi, ziwei)
       const lunar=isLunar?{year:bY,month:bM,day:bD}:s2l(bY,bM,bD);
       const zodiac=getZodiac(solar.month,solar.day);
       const lp=getLP(solar.year,solar.month,solar.day);
       const hd=getHD(solar.year,solar.month,solar.day,bH);
       const mayan=getMayan(solar.year,solar.month,solar.day);
-      const bazi=getBazi(lunar.year,lunar.month,lunar.day,bH);
+      const bazi=getBazi(lunar.year,lunar.month,lunar.day,bH,solar.year,solar.month,solar.day);
       const ziwei=genChart(bY,bM,bD,bH,isLunar);
       const syn=synthesize(zodiac,lp,hd,mayan,bazi,ziwei);
-      setSoul({zodiac,lp,hd,mayan,bazi,ziwei,syn,lpd:LPD[lp]||LPD[1]});
+      const soulData={zodiac,lp,hd,mayan,bazi,ziwei,syn,lpd:LPD[lp]||LPD[1],gen};
+      setSoul(soulData);
       setPage("home");sAnim(false);
+      /* Fire API call in background */
+      fetchAiReading(soulData);
     },1200);
   },[bY,bM,bD,bH,gen,cal]);
 
-  const ltd=useMemo(()=>soul?.ziwei&&tm==="一生"?genLife(soul.ziwei,dim):null,[soul,dim,tm]);
-  const sd=useMemo(()=>soul?.ziwei&&tm!=="一生"?genSimp(soul.ziwei,dim,tm):null,[soul,dim,tm]);
-  const peak=ltd?.pi>=0?ltd.data[ltd.pi]:null;
-  const avg=useMemo(()=>{const d=ltd?.data||sd;if(!d?.length)return 0;return Math.round(d.reduce((a,c)=>a+c.close,0)/d.length)},[ltd,sd]);
+
 
   const PB=({icon,title})=><div onClick={()=>setPage(soul?"home":"input")} style={{display:"inline-flex",alignItems:"center",gap:6,cursor:"pointer",marginBottom:14,padding:"6px 14px 6px 8px",borderRadius:20,background:"rgba(255,255,255,.03)",border:`1px solid ${C.bdr}`,fontSize:".76rem",color:C.txt2,transition:"all .2s"}}><span style={{fontSize:".65rem",opacity:.5}}>←</span><span style={{fontSize:"1rem"}}>{icon}</span><span>{title}</span></div>;
 
@@ -601,42 +700,122 @@ export default function App(){
   }
   // ── INPUT PAGE ──
   if(page==="input"){
-    return(<div style={{minHeight:"100vh",background:`radial-gradient(ellipse at 30% 20%,rgba(140,120,200,.08),transparent 50%),radial-gradient(ellipse at 70% 80%,rgba(212,165,116,.05),transparent 50%),${C.bg}`,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt,padding:20}}><Stars/>
-      <div style={{position:"relative",zIndex:1,width:"100%",maxWidth:520}}>
-        {/* HERO */}
-        <div style={{textAlign:"center",marginBottom:24}}>
-          <div style={{fontSize:"clamp(2rem,6vw,3rem)",fontWeight:900,letterSpacing:".15em",background:`linear-gradient(135deg,${C.gold},${C.rose},${C.purp})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent"}}>靈魂藍圖</div>
-          <div style={{fontSize:".78rem",color:C.txt2,letterSpacing:".3em",marginTop:4}}>SOUL BLUEPRINT</div>
-          <div style={{margin:"16px auto",width:"60%",height:1,background:`linear-gradient(90deg,transparent,${C.gold}44,transparent)`}}/>
-          <div style={{fontSize:".82rem",color:C.txt2,lineHeight:1.8}}>融合六大命理系統，解鎖專屬於你的靈魂印記</div>
-        </div>
-        {/* SOUL FORM */}
-        <Glass>
-          <div style={{display:"flex",justifyContent:"center",gap:6,marginBottom:16}}>
-            {[["solar","陽曆"],["lunar","農曆"]].map(([v,l])=><button key={v} onClick={()=>sCal(v)} style={{padding:"6px 20px",borderRadius:20,fontSize:".8rem",fontFamily:"inherit",cursor:"pointer",background:cal===v?`linear-gradient(135deg,${C.gold},${C.rose})`:"transparent",color:cal===v?"#1a1428":C.txt2,border:cal===v?"none":`1px solid ${C.bdr}`,transition:"all .2s"}}>{l}</button>)}
+    const bgRef=useRef(null);
+    const [nebulaBg,setNebulaBg]=useState(null);
+    /* Generate high-res nebula texture once on mount */
+    useEffect(()=>{
+      const W=800,H=1400;
+      const c=document.createElement("canvas");c.width=W;c.height=H;
+      const x=c.getContext("2d");
+      /* Black base */
+      x.fillStyle="#0c0814";x.fillRect(0,0,W,H);
+      /* Noise function for organic texture */
+      const noise=(px,py,sc)=>{const v=Math.sin(px*sc*12.9898+py*sc*78.233)*43758.5453;return v-Math.floor(v)};
+      /* Paint nebula in layers using many small semi-transparent circles */
+      const paintCloud=(cx,cy,rx,ry,r,g,b,maxA,count)=>{
+        for(let i=0;i<count;i++){
+          const ang=Math.random()*Math.PI*2;
+          const dist=Math.pow(Math.random(),.6);
+          const px=cx+Math.cos(ang)*dist*rx+(Math.random()-.5)*rx*.3;
+          const py=cy+Math.sin(ang)*dist*ry+(Math.random()-.5)*ry*.3;
+          const sz=Math.random()*rx*.18+4;
+          const a=maxA*(1-dist*.8)*(Math.random()*.5+.5);
+          const g2=x.createRadialGradient(px,py,0,px,py,sz);
+          g2.addColorStop(0,`rgba(${r},${g},${b},${a})`);
+          g2.addColorStop(1,"transparent");
+          x.fillStyle=g2;x.fillRect(px-sz,py-sz,sz*2,sz*2);
+        }
+      };
+      x.globalCompositeOperation="screen";
+      /* Layer 1: Large purple nebula - upper left */
+      paintCloud(W*.35,H*.28,W*.45,H*.2,160,50,180,.12,800);
+      paintCloud(W*.35,H*.28,W*.3,H*.12,200,80,220,.08,400);
+      /* Layer 2: Bright magenta/pink band across center */
+      paintCloud(W*.4,H*.38,W*.5,H*.08,220,100,190,.15,600);
+      paintCloud(W*.45,H*.35,W*.4,H*.06,255,140,220,.1,300);
+      /* Layer 3: Secondary pink swirl - lower */
+      paintCloud(W*.3,H*.52,W*.45,H*.07,200,90,170,.1,500);
+      /* Layer 4: Bright core hotspot */
+      paintCloud(W*.38,H*.35,W*.12,H*.06,255,160,230,.2,300);
+      paintCloud(W*.38,H*.35,W*.06,H*.03,255,200,240,.15,150);
+      /* Layer 5: Gold nebula - bottom right */
+      paintCloud(W*.65,H*.72,W*.35,H*.18,240,200,120,.12,600);
+      paintCloud(W*.6,H*.75,W*.25,H*.12,255,220,140,.08,400);
+      /* Layer 6: Gold accent bottom left */
+      paintCloud(W*.25,H*.82,W*.3,H*.1,230,190,110,.1,400);
+      /* Layer 7: Subtle blue-purple lower area */
+      paintCloud(W*.5,H*.6,W*.5,H*.15,100,60,160,.05,300);
+      /* Stars - many tiny bright dots */
+      x.globalCompositeOperation="screen";
+      for(let i=0;i<600;i++){
+        const sx=Math.random()*W,sy=Math.random()*H;
+        const bright=Math.random();
+        const sz=bright>.95?2:bright>.8?1.2:.6;
+        const a=bright>.9?.8:bright>.6?.4:.15;
+        x.fillStyle=bright>.7?`rgba(255,240,220,${a})`:`rgba(220,220,255,${a})`;
+        x.beginPath();x.arc(sx,sy,sz,0,6.28);x.fill();
+        /* Cross flare on brightest */
+        if(bright>.93){
+          x.strokeStyle=`rgba(255,240,220,${a*.3})`;x.lineWidth=.5;
+          x.beginPath();x.moveTo(sx-sz*4,sy);x.lineTo(sx+sz*4,sy);x.stroke();
+          x.beginPath();x.moveTo(sx,sy-sz*4);x.lineTo(sx,sy+sz*4);x.stroke();
+        }
+      }
+      /* Dense golden sparkle cluster at bottom 30% */
+      for(let i=0;i<300;i++){
+        const sx=Math.random()*W,sy=H*.65+Math.random()*H*.35;
+        const bright=Math.random();
+        const sz=bright>.9?2.5:bright>.7?1.5:.8;
+        const a=bright>.8?.7:bright>.5?.35:.15;
+        x.fillStyle=`rgba(255,${220+Math.random()*30},${140+Math.random()*60},${a})`;
+        x.beginPath();x.arc(sx,sy,sz,0,6.28);x.fill();
+        if(bright>.88){
+          x.strokeStyle=`rgba(255,225,160,${a*.25})`;x.lineWidth=.4;
+          const fl=sz*3.5;
+          x.beginPath();x.moveTo(sx-fl,sy);x.lineTo(sx+fl,sy);x.stroke();
+          x.beginPath();x.moveTo(sx,sy-fl);x.lineTo(sx,sy+fl);x.stroke();
+        }
+      }
+      setNebulaBg(c.toDataURL("image/jpeg",.92));
+    },[]);
+    return(<div style={{minHeight:"100vh",fontFamily:"'Noto Serif SC','STSong',serif",color:"#e8dcc8",position:"relative",overflow:"hidden",background:"#0c0814"}}>
+      {/* Pre-rendered nebula background */}
+      {nebulaBg&&<div style={{position:"absolute",inset:"-5%",zIndex:0,backgroundImage:`url(${nebulaBg})`,backgroundSize:"cover",backgroundPosition:"center",animation:"nebulaSway 30s ease-in-out infinite alternate"}}/>}
+      {/* Animated overlay glow layers for movement */}
+      <div style={{position:"absolute",inset:"-10%",zIndex:1,background:"radial-gradient(ellipse at 40% 35%,rgba(200,80,180,.08),transparent 50%)",animation:"nebulaFloat1 15s ease-in-out infinite alternate",pointerEvents:"none"}}/>
+      <div style={{position:"absolute",inset:"-10%",zIndex:1,background:"radial-gradient(ellipse at 60% 75%,rgba(240,200,120,.06),transparent 45%)",animation:"nebulaFloat3 18s ease-in-out infinite alternate",pointerEvents:"none"}}/>
+      {/* Constellation SVGs */}
+      <svg style={{position:"absolute",top:"5%",right:"5%",width:120,height:120,opacity:.18,zIndex:2}} viewBox="0 0 100 100"><circle cx="18" cy="12" r="1.8" fill="#d4a574"/><circle cx="48" cy="6" r="1.2" fill="#d4a574"/><circle cx="78" cy="20" r="1.8" fill="#d4a574"/><circle cx="62" cy="48" r="1.2" fill="#d4a574"/><circle cx="88" cy="58" r="1.5" fill="#d4a574"/><circle cx="40" cy="38" r="1" fill="#d4a574"/><line x1="18" y1="12" x2="48" y2="6" stroke="#d4a574" strokeWidth=".5" opacity=".6"/><line x1="48" y1="6" x2="78" y2="20" stroke="#d4a574" strokeWidth=".5" opacity=".6"/><line x1="78" y1="20" x2="62" y2="48" stroke="#d4a574" strokeWidth=".5" opacity=".6"/><line x1="62" y1="48" x2="88" y2="58" stroke="#d4a574" strokeWidth=".5" opacity=".6"/><line x1="48" y1="6" x2="40" y2="38" stroke="#d4a574" strokeWidth=".4" opacity=".4"/><line x1="40" y1="38" x2="62" y2="48" stroke="#d4a574" strokeWidth=".4" opacity=".4"/></svg>
+      <svg style={{position:"absolute",bottom:"4%",left:"3%",width:100,height:100,opacity:.12,zIndex:2}} viewBox="0 0 100 100"><circle cx="12" cy="30" r="1.5" fill="#c0a0c0"/><circle cx="38" cy="12" r="1" fill="#c0a0c0"/><circle cx="58" cy="38" r="1.5" fill="#c0a0c0"/><circle cx="28" cy="62" r="1" fill="#c0a0c0"/><circle cx="72" cy="72" r="1.5" fill="#c0a0c0"/><line x1="12" y1="30" x2="38" y2="12" stroke="#c0a0c0" strokeWidth=".5" opacity=".5"/><line x1="38" y1="12" x2="58" y2="38" stroke="#c0a0c0" strokeWidth=".5" opacity=".5"/><line x1="58" y1="38" x2="28" y2="62" stroke="#c0a0c0" strokeWidth=".5" opacity=".5"/><line x1="28" y1="62" x2="72" y2="72" stroke="#c0a0c0" strokeWidth=".5" opacity=".5"/></svg>
+      {/* Content */}
+      <div style={{position:"relative",zIndex:3,display:"flex",alignItems:"center",justifyContent:"center",minHeight:"100vh",padding:"40px 20px"}}>
+        <div style={{width:"100%",maxWidth:460}}>
+          <div style={{textAlign:"center",marginBottom:28}}>
+            <div style={{fontSize:"clamp(2.5rem,9vw,3.8rem)",fontWeight:900,letterSpacing:".22em",color:"#e8c0b8",textShadow:"0 0 40px rgba(220,160,160,.15),0 2px 4px rgba(0,0,0,.4)"}}>靈魂藍圖</div>
+            <div style={{fontSize:".82rem",color:"rgba(220,200,190,.75)",letterSpacing:".4em",marginTop:8,fontStyle:"italic"}}>SOUL BLUEPRINT</div>
+            <div style={{margin:"20px auto",width:"45%",height:1,background:"linear-gradient(90deg,transparent,rgba(200,170,150,.18),transparent)"}}/>
+            <div style={{fontSize:".86rem",color:"rgba(220,200,190,.7)",lineHeight:1.9,letterSpacing:".08em"}}>融合六大命理系統，解鎖專屬於你的靈魂印記</div>
           </div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:12}}>
-            <div style={{gridColumn:"1/-1"}}><label style={{display:"block",fontSize:".7rem",color:C.txt2,marginBottom:3}}>出生年</label><input type="number" min={1924} max={2010} value={bY} onChange={e=>sBY(+e.target.value)} style={{width:"100%",padding:"10px",background:"rgba(255,255,255,.03)",border:`1px solid ${C.bdr}`,borderRadius:8,fontSize:".88rem",color:C.txt,fontFamily:"inherit"}}/></div>
-            <div><label style={{display:"block",fontSize:".7rem",color:C.txt2,marginBottom:3}}>出生月</label><select value={bM} onChange={e=>sBM(+e.target.value)} style={{width:"100%",padding:"10px",background:"rgba(255,255,255,.03)",border:`1px solid ${C.bdr}`,borderRadius:8,fontSize:".88rem",color:C.txt,fontFamily:"inherit"}}>{Array.from({length:12},(_,i)=><option key={i+1} value={i+1} style={{background:"#1a1428"}}>{i+1}月</option>)}</select></div>
-            <div><label style={{display:"block",fontSize:".7rem",color:C.txt2,marginBottom:3}}>出生日</label><select value={bD} onChange={e=>sBD(+e.target.value)} style={{width:"100%",padding:"10px",background:"rgba(255,255,255,.03)",border:`1px solid ${C.bdr}`,borderRadius:8,fontSize:".88rem",color:C.txt,fontFamily:"inherit"}}>{Array.from({length:31},(_,i)=><option key={i+1} value={i+1} style={{background:"#1a1428"}}>{i+1}日</option>)}</select></div>
-            <div style={{gridColumn:"1/-1"}}><label style={{display:"block",fontSize:".7rem",color:C.txt2,marginBottom:3}}>出生時辰</label><select value={bH} onChange={e=>sBH(+e.target.value)} style={{width:"100%",padding:"10px",background:"rgba(255,255,255,.03)",border:`1px solid ${C.bdr}`,borderRadius:8,fontSize:".88rem",color:C.txt,fontFamily:"inherit"}}>{SC_OPT.map(o=><option key={o.v} value={o.v} style={{background:"#1a1428"}}>{o.l}</option>)}</select></div>
-            <div style={{gridColumn:"1/-1"}}><label style={{display:"block",fontSize:".7rem",color:C.txt2,marginBottom:3}}>性別</label><div style={{display:"flex",gap:6}}>{[["female","女"],["male","男"]].map(([v,l])=><button key={v} onClick={()=>sGen(v)} style={{flex:1,padding:"10px",borderRadius:8,fontSize:".85rem",fontFamily:"inherit",cursor:"pointer",background:gen===v?`linear-gradient(135deg,${C.gold}33,${C.rose}22)`:"rgba(255,255,255,.02)",color:gen===v?C.gold:C.txt2,border:`1px solid ${gen===v?C.gold+"44":C.bdr}`,transition:"all .2s"}}>{l}</button>)}</div></div>
+          <div style={{background:"rgba(16,12,24,.82)",backdropFilter:"blur(20px)",WebkitBackdropFilter:"blur(20px)",borderRadius:20,border:"1px solid rgba(200,180,160,.07)",padding:"32px 28px 26px",boxShadow:"0 12px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.02)"}}>
+            <div style={{display:"flex",justifyContent:"center",gap:4,marginBottom:24}}>
+              {[["solar","陽曆"],["lunar","農曆"]].map(([v,l])=><button key={v} onClick={()=>sCal(v)} style={{padding:"9px 32px",fontSize:".92rem",fontFamily:"inherit",cursor:"pointer",background:cal===v?"#f0d0c0":"transparent",color:cal===v?"#3a2525":"rgba(210,190,180,.55)",border:"none",borderRadius:22,fontWeight:cal===v?700:400,transition:"all .3s",letterSpacing:".12em"}}>{l}</button>)}
+            </div>
+            <div style={{display:"flex",flexDirection:"column",gap:16}}>
+              <div><label style={{display:"block",fontSize:".8rem",color:"rgba(210,190,180,.55)",marginBottom:6}}>出生年</label><input type="number" min={1924} max={2010} value={bY} onChange={e=>sBY(+e.target.value)} style={{width:"100%",padding:"14px 16px",background:"rgba(255,255,255,.015)",border:"1px solid rgba(200,180,170,.08)",borderRadius:10,fontSize:"1.05rem",color:"#e8dcc8",fontFamily:"inherit"}}/></div>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+                <div><label style={{display:"block",fontSize:".8rem",color:"rgba(210,190,180,.55)",marginBottom:6}}>出生月</label><select value={bM} onChange={e=>sBM(+e.target.value)} style={{width:"100%",padding:"14px 16px",background:"rgba(255,255,255,.015)",border:"1px solid rgba(200,180,170,.08)",borderRadius:10,fontSize:"1.05rem",color:"#e8dcc8",fontFamily:"inherit",appearance:"auto"}}>{Array.from({length:12},(_,i)=><option key={i+1} value={i+1} style={{background:"#14101e"}}>{i+1}月</option>)}</select></div>
+                <div><label style={{display:"block",fontSize:".8rem",color:"rgba(210,190,180,.55)",marginBottom:6}}>出生日</label><select value={bD} onChange={e=>sBD(+e.target.value)} style={{width:"100%",padding:"14px 16px",background:"rgba(255,255,255,.015)",border:"1px solid rgba(200,180,170,.08)",borderRadius:10,fontSize:"1.05rem",color:"#e8dcc8",fontFamily:"inherit",appearance:"auto"}}>{Array.from({length:maxDays},(_,i)=><option key={i+1} value={i+1} style={{background:"#14101e"}}>{i+1}日</option>)}</select></div>
+              </div>
+              <div><label style={{display:"block",fontSize:".8rem",color:"rgba(210,190,180,.55)",marginBottom:6}}>出生時辰</label><select value={bH} onChange={e=>sBH(+e.target.value)} style={{width:"100%",padding:"14px 16px",background:"rgba(255,255,255,.015)",border:"1px solid rgba(200,180,170,.08)",borderRadius:10,fontSize:"1.05rem",color:"#e8dcc8",fontFamily:"inherit",appearance:"auto"}}>{SC_OPT.map(o=><option key={o.v} value={o.v} style={{background:"#14101e"}}>{o.l}</option>)}</select></div>
+              <div><label style={{display:"block",fontSize:".8rem",color:"rgba(210,190,180,.55)",marginBottom:6}}>性別</label><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>{[["female","女"],["male","男"]].map(([v,l])=><button key={v} onClick={()=>sGen(v)} style={{padding:"14px",borderRadius:10,fontSize:"1.05rem",fontFamily:"inherit",cursor:"pointer",background:gen===v?"linear-gradient(135deg,rgba(240,210,195,.2),rgba(220,190,170,.12))":"transparent",color:gen===v?"#e8ccc0":"rgba(210,190,180,.55)",border:gen===v?"1px solid rgba(240,210,195,.2)":"1px solid rgba(200,180,170,.08)",transition:"all .3s",fontWeight:gen===v?600:400,letterSpacing:".15em"}}>{l}</button>)}</div></div>
+            </div>
           </div>
-          <button onClick={unlock} disabled={anim} style={{display:"block",width:"100%",margin:"6px 0 0",padding:"14px",background:anim?"rgba(212,165,116,.15)":`linear-gradient(135deg,${C.gold},${C.rose})`,color:anim?C.txt2:"#1a1428",border:"none",borderRadius:12,fontSize:"1rem",fontWeight:700,cursor:anim?"wait":"pointer",fontFamily:"inherit",letterSpacing:".15em",boxShadow:anim?"none":"0 4px 24px rgba(212,165,116,.25)",transition:"all .3s"}}>{anim?"✧ 正在解讀星象 ✧":"✦ 解鎖靈魂印記 ✦"}</button>
-        </Glass>
-        {/* MINI ORACLE ROW */}
-        <div style={{marginTop:20,display:"flex",gap:10}}>
-          <div onClick={openFortune} style={{flex:1,cursor:"pointer",padding:"14px 10px",borderRadius:12,background:"rgba(212,165,116,.04)",border:"1px solid rgba(212,165,116,.1)",textAlign:"center",transition:"all .3s"}}>
-            <div style={{fontSize:"1rem",color:C.gold,marginBottom:4,textShadow:"0 0 12px rgba(212,165,116,.2)"}}>☰</div>
-            <div style={{fontSize:".72rem",fontWeight:600,color:C.gold}}>求籤</div>
-          </div>
-          <div onClick={openTarot} style={{flex:1,cursor:"pointer",padding:"14px 10px",borderRadius:12,background:"rgba(180,130,180,.04)",border:"1px solid rgba(180,130,180,.1)",textAlign:"center",transition:"all .3s"}}>
-            <div style={{fontSize:"1rem",color:C.purp,marginBottom:4,textShadow:"0 0 12px rgba(180,130,180,.2)"}}>☽</div>
-            <div style={{fontSize:".72rem",fontWeight:600,color:C.purp}}>塔羅</div>
-          </div>
-          <div onClick={openIChing} style={{flex:1,cursor:"pointer",padding:"14px 10px",borderRadius:12,background:"rgba(130,180,200,.04)",border:"1px solid rgba(130,180,200,.1)",textAlign:"center",transition:"all .3s"}}>
-            <div style={{fontSize:"1rem",color:C.blue,marginBottom:4,textShadow:"0 0 12px rgba(130,180,200,.2)"}}>◎</div>
-            <div style={{fontSize:".72rem",fontWeight:600,color:C.blue}}>易經</div>
+          <button onClick={unlock} disabled={anim} style={{display:"block",width:"100%",margin:"18px 0 0",padding:"17px",background:anim?"rgba(200,170,150,.08)":"linear-gradient(135deg,#f0d0c0,#e8d0a8,#f0c8c0)",color:anim?"rgba(210,190,180,.55)":"#3a2525",border:"none",borderRadius:14,fontSize:"1.08rem",fontWeight:700,cursor:anim?"wait":"pointer",fontFamily:"inherit",letterSpacing:".2em",boxShadow:anim?"none":"0 6px 30px rgba(200,170,140,.12)",transition:"all .4s"}}>{anim?"✧ 正在解讀星象 ✧":"✦ 解鎖靈魂印記 ✦"}</button>
+          <div style={{marginTop:24,display:"flex",gap:10}}>
+            {[{fn:openFortune,ic:"☰",lb:"求籤",cl:"200,170,140"},{fn:openTarot,ic:"☽",lb:"塔羅",cl:"180,140,180"},{fn:openIChing,ic:"◎",lb:"易經",cl:"140,170,190"}].map((o,i)=><div key={i} onClick={o.fn} style={{flex:1,cursor:"pointer",padding:"12px 8px",borderRadius:12,background:`rgba(${o.cl},.06)`,border:`1px solid rgba(${o.cl},.12)`,textAlign:"center",transition:"all .3s"}}>
+              <div style={{fontSize:".95rem",color:`rgba(${o.cl},.85)`,marginBottom:3}}>{o.ic}</div>
+              <div style={{fontSize:".68rem",fontWeight:600,color:`rgba(${o.cl},.75)`}}>{o.lb}</div>
+            </div>)}
           </div>
         </div>
       </div>
@@ -703,130 +882,179 @@ export default function App(){
     </div>);
   }
 
-  // ── ZIWEI K-LINE PAGE ──
+  // ── ZIWEI DEEP ANALYSIS PAGE ──
   if(page==="ziwei"&&soul){
-    const ch=soul.ziwei;
-    return(<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt}}>
-      <Stars/><Nav/>
-      <div ref={cr} style={{position:"relative",zIndex:1,maxWidth:1100,margin:"0 auto",padding:"16px 14px 40px"}}>
-        <PB icon="📈" title="紫微走勢"/>
-        <div style={{textAlign:"center",marginBottom:14,fontSize:".76rem",color:C.txt2}}>
-          農曆{ch.yg}年 ｜ {ch.ju.name} ｜ 命宮{BR[ch.lpp]} ｜ 生年四化：<span style={{color:C.gold}}>{SHT[ch.ysi][0]}祿</span> · <span style={{color:C.rose}}>{SHT[ch.ysi][1]}權</span> · <span style={{color:C.blue}}>{SHT[ch.ysi][2]}科</span> · <span style={{color:"#b07080"}}>{SHT[ch.ysi][3]}忌</span>
+    const ch=soul.ziwei,cy=new Date().getFullYear(),curAge=cy-ch.bY;
+    const ai=aiReading;/* null if not ready */
+    const Shimmer=()=><div style={{display:"flex",flexDirection:"column",gap:6}}>{[100,80,90].map((w,i)=><div key={i} style={{height:12,width:`${w}%`,borderRadius:4,background:"linear-gradient(90deg,rgba(212,165,116,.04),rgba(212,165,116,.1),rgba(212,165,116,.04))",backgroundSize:"200% 100%",animation:"shimmer 1.5s ease-in-out infinite"}}/>)}</div>;
+    const AiText=({text,fallback})=><div style={{fontSize:".85rem",lineHeight:1.9,color:"rgba(255,255,255,.6)"}}>{text||fallback||(aiLoading?<Shimmer/>:"載入中...")}</div>;
+    /* ── Generate 大限 data ── */
+    const dxList=[];const juStart=ch.ju.value;
+    for(let i=0;i<7&&juStart+i*10<85;i++){
+      const sa=juStart+i*10,ea=Math.min(sa+9,84);
+      const sy=ch.bY+sa,ey=ch.bY+ea;
+      /* palace for this 大限: cycle from 命宮 */
+      const pIdx=(ch.lpp+i)%12;
+      const p=ch.P.find(pp=>pp.bi===pIdx)||ch.P[i%12];
+      const isCur=curAge>=sa&&curAge<=ea;
+      /* score */
+      const sc2=scoreP(p);
+      const rating=sc2.close>=75?5:sc2.close>=60?4:sc2.close>=45?3:sc2.close>=30?2:1;
+      /* find peak */
+      const allStars=[...p.stars,...p.ls].join("・")||"空宮";
+      const ushi=p.us.length>0?" ("+p.us.join("、")+")":"";
+      /* desc based on stars */
+      const mainStar=p.stars[0]||p.ls[0]||"空宮";
+      const starDescs={"紫微":"帝星坐鎮，格局提升，領導力覺醒。","天機":"思維活躍，變動頻繁，適應力強。","太陽":"貴人運旺，社會地位提升，光明正大。","武曲":"財星發力，財務意識覺醒，務實進取。","天同":"心境平和，生活安逸，但容易缺乏衝勁。","廉貞":"桃花與事業並重，感情豐富但需管理情緒。","天府":"庫星守護，資源豐厚，穩中求進。","太陰":"財富累積期，直覺敏銳，適合深耕。","貪狼":"慾望驅動力強，社交活躍，多元發展。","巨門":"口才突出但口舌是非多，需謹言慎行。","天相":"貴人相助，適合合作，考試簽約有利。","天梁":"化險為夷的能力強，適合擔任顧問角色。","七殺":"衝勁十足，開創格局，但壓力也大。","破軍":"大破大立，變動劇烈，勇於重新開始。"};
+      const desc=`${starDescs[mainStar]||"此時期能量平穩，適合自我調整。"}${p.us.length>0?"煞星"+p.us.join("、")+"帶來考驗，但磨練出真功夫。":""}${p.sh.filter(s=>s.name==="化祿").length>0?"化祿加持帶來好運與資源。":""}${p.sh.filter(s=>s.name==="化忌").length>0?"化忌提醒此階段需特別留心相關領域。":""}`;
+      dxList.push({sa,ea,sy,ey,palace:PN[ch.P.indexOf(p)]||PN[i%12],branch:BR[pIdx],stars:allStars+ushi,rating,desc,isCur,score:sc2.close,pIdx});
+    }
+    const peakDx=dxList.reduce((a,b)=>a.score>b.score?a:b,dxList[0]);
+    peakDx.isPeak=true;
+    /* ── Generate 流年 data ── */
+    const lyYsi=((cy-4)%10+10)%10,lyYbi=((cy-4)%12+12)%12;
+    const lySH=SHT[lyYsi];
+    const lyAge=curAge;
+    /* flow year palace = cycle based on age */
+    const lyPIdx=(ch.lpp+(lyAge-juStart))%12;
+    const lyP=ch.P.find(pp=>pp.bi===lyPIdx)||ch.P[0];
+    const lySc=scoreP(lyP);
+    const lyRating=lySc.close>=75?5:lySc.close>=60?4:lySc.close>=45?3:lySc.close>=30?2:1;
+    /* sections for 流年 */
+    const dimNames=["總運","事業運","財運","感情","健康"];
+    const dimPals=[0,8,4,2,5];/* 命,事業,財帛,夫妻,疾厄 palace indices in PN */
+    const dimIcons=["◎","⚡","◈","♢","○"];
+    const lySections=dimNames.map((dn,di)=>{
+      const dpi=dimPals[di];const dp=ch.P[dpi];const dsc=scoreP(dp);
+      const dr=dsc.close>=75?5:dsc.close>=60?4:dsc.close>=45?3:dsc.close>=30?2:1;
+      const mainS=dp.stars[0]||dp.ls[0]||"";
+      const hasLu=dp.sh.some(s=>s.name==="化祿"),hasJi=dp.sh.some(s=>s.name==="化忌");
+      const descs={"總運":{good:"整體能量充沛，適合主動出擊，把握機遇。",mid:"整體運勢平穩，穩中求進是最佳策略。",low:"整體需要韜光養晦，保存實力等待轉機。"},"事業運":{good:"事業星光熠熠，適合大膽推進重要專案。專業能力會被看見。",mid:"事業穩步推進，適合精進技術、累積專業深度。",low:"事業壓力較大，建議穩住腳步，不宜冒進。"},"財運":{good:"正財偏財皆有利，把握機會積極理財。",mid:"正財穩健，建議以穩健投資為主，避免投機。",low:"財務上需謹慎，避免大額支出和高風險投資。"},"感情":{good:"桃花旺盛，人際關係和諧，適合深化重要關係。",mid:"感情平順，重要的是維持良好溝通。",low:"感情上容易有誤會或摩擦，需要更多耐心與包容。"},"健康":{good:"身體能量充足，適合加強鍛鍊。",mid:"健康尚可，注意作息規律和飲食均衡。",low:"需要特別關注身體訊號，避免過度勞累。"}};
+      const lvl=dr>=4?"good":dr>=3?"mid":"low";
+      let content=descs[dn]?.[lvl]||"平穩期。";
+      if(hasLu)content+=`${lySH[0]}化祿加持此宮，帶來助力。`;
+      if(hasJi)content+=`注意${lySH[3]}化忌的影響，相關事務需多留心。`;
+      return{title:dn,icon:dimIcons[di],rating:dr,content};
+    });
+    /* quarterly */
+    const lyQuarterly=[1,2,3,4].map(q=>{
+      const mStart=(q-1)*3+1,mEnd=q*3;
+      const qh=hs(ch.ysi,q,lyYsi,ch.zwp);
+      const qr=qh>.7?4.5:qh>.5?3.5:qh>.3?3:2.5;
+      const qNotes=["開局佈陣期，適合規劃與拓展人脈。","中段發力期，把握機會推進重要事項。","沉澱整理期，適合盤點資源、優化方向。","收尾蓄力期，回顧成果、為來年佈局。"];
+      return{q:`Q${q}（農曆${mStart}-${mEnd}月）`,rating:qr,note:qNotes[q-1]};
+    });
+    /* ── Timeline for 大運何時來 ── */
+    const timeline=[];
+    dxList.forEach((dx,i)=>{
+      const isPast=curAge>dx.ea;const isFut=curAge<dx.sa;
+      timeline.push({year:`${dx.sy}-${dx.ey}`,age:`${dx.sa}-${dx.ea}歲`,label:dx.isPeak?"★ 黃金大運":dx.isCur?"當前大限":isPast?"已走過":"未來大限",desc:`${dx.palace}（${dx.branch}）・${dx.stars}`,dot:dx.isPeak?"#f0c040":dx.isCur?C.gold:isPast?"rgba(200,170,100,.25)":"rgba(130,180,200,.5)",isPeak:dx.isPeak,isCur:dx.isCur,isPast,rating:dx.rating});
+    });
+    /* StarRating inline */
+    const SR=({r})=><div style={{display:"flex",gap:3}}>{Array.from({length:5},(_,i)=><div key={i} style={{width:8,height:8,borderRadius:4,background:i<Math.floor(r)?C.gold:i<r?`linear-gradient(90deg,${C.gold} 50%,rgba(212,165,116,.15) 50%)`:"rgba(212,165,116,.15)",border:"1px solid rgba(212,165,116,.2)"}}/>)}</div>;
+
+    return(<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt}}><Stars/><Nav/>
+      <div style={{position:"relative",zIndex:1,maxWidth:600,margin:"0 auto",padding:"16px 14px 40px"}}>
+        <PB icon="☰" title="紫微斗數"/>
+        {/* Tab bar */}
+        <div style={{display:"flex",gap:0,marginBottom:16,borderBottom:"1px solid rgba(212,165,116,.12)",position:"sticky",top:48,background:C.bg,zIndex:10,paddingTop:4}}>
+          {[`${cy}流年`,`十年大限`,`大運何時來`].map((t,i)=><button key={i} onClick={()=>setZwTab(i)} style={{flex:1,padding:"10px 0",border:"none",background:"none",color:zwTab===i?C.gold:"rgba(212,165,116,.45)",fontSize:".82rem",fontWeight:zwTab===i?700:400,fontFamily:"inherit",cursor:"pointer",borderBottom:zwTab===i?`2px solid ${C.gold}`:"2px solid transparent",transition:"all .2s",letterSpacing:".08em"}}>{t}</button>)}
         </div>
-        <div style={{display:"flex",justifyContent:"center",gap:5,marginBottom:8,flexWrap:"wrap"}}>
-          {["總運","財運","健康","感情"].map(d=><button key={d} onClick={()=>sDim(d)} style={{padding:"6px 18px",borderRadius:20,fontSize:".8rem",fontFamily:"inherit",cursor:"pointer",background:dim===d?`linear-gradient(135deg,${C.gold}44,${C.rose}33)`:"transparent",color:dim===d?C.gold:C.txt2,border:dim===d?`1px solid ${C.gold}44`:`1px solid ${C.bdr}`,transition:"all .2s"}}>{d}</button>)}
-        </div>
-        <div style={{display:"flex",justifyContent:"center",gap:3,marginBottom:14}}>
-          {["一生","流年","流月"].map(t=><button key={t} onClick={()=>sTm(t)} style={{padding:"3px 14px",fontSize:".74rem",fontFamily:"inherit",cursor:"pointer",background:"transparent",color:tm===t?C.gold:C.txt2,border:"none",borderBottom:tm===t?`2px solid ${C.gold}`:"2px solid transparent"}}>{t}</button>)}
-        </div>
-        <Glass style={{padding:0,overflow:"hidden"}}>
-          <div style={{padding:"12px 16px",borderBottom:`1px solid ${C.bdr}`,display:"flex",justifyContent:"space-between",alignItems:"center",flexWrap:"wrap",gap:6}}>
-            <span style={{fontSize:".88rem",fontWeight:700,color:C.gold}}>{dim} · {tm}走勢</span>
-            <div style={{display:"flex",gap:12,fontSize:".72rem",color:C.txt2}}>
-              <span><span style={{display:"inline-block",width:8,height:8,background:C.gold,borderRadius:4,marginRight:3,verticalAlign:"middle"}}/>漲</span>
-              <span><span style={{display:"inline-block",width:8,height:8,background:"#7b6baa",borderRadius:4,marginRight:3,verticalAlign:"middle"}}/>跌</span>
+
+        {/* ═══ TAB 0: 流年分析 ═══ */}
+        {zwTab===0&&<div style={{display:"flex",flexDirection:"column",gap:14}}>
+          <div style={{textAlign:"center",padding:"16px 0",borderBottom:"1px solid rgba(212,165,116,.08)"}}>
+            <div style={{fontSize:".65rem",color:"rgba(212,165,116,.4)",letterSpacing:".2em",marginBottom:4}}>流年命盤</div>
+            <div style={{fontSize:"1.35rem",fontWeight:700,color:C.gold,letterSpacing:".2em"}}>{ST[lyYsi]}{BR[lyYbi]}年（{cy}）</div>
+            <div style={{fontSize:".75rem",color:"rgba(212,165,116,.45)",marginTop:4}}>虛歲{lyAge+1} ・ 流年命宮{BR[lyPIdx]}</div>
+            <div style={{display:"flex",gap:14,justifyContent:"center",marginTop:12,flexWrap:"wrap"}}>
+              {[{s:lySH[0],h:"化祿",c:C.gold},{s:lySH[1],h:"化權",c:C.rose},{s:lySH[2],h:"化科",c:C.blue},{s:lySH[3],h:"化忌",c:"rgba(180,130,130,.7)"}].map((h,i)=><div key={i} style={{textAlign:"center"}}><div style={{fontSize:".9rem",fontWeight:700,color:h.c}}>{h.s}</div><div style={{fontSize:".6rem",color:"rgba(212,165,116,.3)"}}>{h.h}</div></div>)}
             </div>
           </div>
-          {peak&&tm==="一生"&&<div style={{padding:"8px 16px",background:`${C.gold}08`,fontSize:".78rem",color:C.gold,borderBottom:`1px solid ${C.bdr}`}}>✦ 單年最高：{peak.year}年（{peak.yl}）{peak.age}歲 — {peak.close}分 <span style={{color:C.txt2}}>（平均 {avg} 分）</span></div>}
-          <div style={{overflowX:"auto"}}>{tm==="一生"&&ltd?<KChart data={ltd.data} w={Math.max(cw,ltd.data.length*13)} h={380} isLife/>:sd?.length?<KChart data={sd} w={cw} h={340}/>:null}</div>
-        </Glass>
-        {/* Commentary */}
-        <Glass style={{marginTop:14}}>
-          <div style={{fontSize:".9rem",fontWeight:700,color:C.gold,marginBottom:8}}>{dim}分析 <span style={{float:"right",fontSize:".82rem",fontWeight:400,color:C.txt2}}>平均 <b style={{color:avg>=50?C.gold:"#b07080"}}>{avg}</b> 分</span></div>
-          <div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{soul.syn.giftText.split("。")[0]}。{avg>60?"整體運勢不錯，好事多於壞事。":avg>45?"運勢中規中矩，穩扎穩打。":"運勢偏弱但別灰心，低谷是反彈前奏。"}</div>
-          <div style={{marginTop:12,display:"flex",alignItems:"center",gap:8}}>
-            <span style={{fontSize:".7rem",color:C.txt2}}>能量值</span>
-            <div style={{flex:1,height:4,background:"rgba(255,255,255,.04)",borderRadius:2,overflow:"hidden"}}><div style={{height:"100%",width:`${avg}%`,background:`linear-gradient(90deg,${C.purp},${C.gold})`,borderRadius:2,transition:"width .5s"}}/></div>
-            <span style={{fontSize:".82rem",fontWeight:800,color:C.gold}}>{avg}</span>
+          {lySections.map((s,i)=><div key={i} style={{padding:"12px 14px",background:"rgba(212,165,116,.02)",border:"1px solid rgba(212,165,116,.08)",borderRadius:8,cursor:"default"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+              <div style={{display:"flex",alignItems:"center",gap:8}}>
+                <span style={{color:C.gold,fontSize:".9rem"}}>{s.icon}</span>
+                <span style={{color:"rgba(255,255,255,.85)",fontSize:".9rem",fontWeight:600,letterSpacing:".05em"}}>{s.title}</span>
+              </div>
+              <SR r={s.rating}/>
+            </div>
+            <AiText text={ai?.liuNian?.[["overall","career","wealth","love","health"][i]]} fallback={s.content}/>
+          </div>)}
+          {/* Quarterly */}
+          <div style={{marginTop:4,padding:"12px 0",borderTop:"1px solid rgba(212,165,116,.08)"}}>
+            <div style={{fontSize:".65rem",color:"rgba(212,165,116,.3)",letterSpacing:".15em",marginBottom:10,textAlign:"center"}}>季度運勢節奏</div>
+            <div style={{display:"flex",flexDirection:"column",gap:8}}>
+              {lyQuarterly.map((q,i)=><div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 10px",background:"rgba(212,165,116,.02)",borderRadius:6,border:"1px solid rgba(212,165,116,.05)"}}>
+                <div style={{minWidth:90}}>
+                  <div style={{fontSize:".75rem",color:C.gold,fontWeight:600}}>{q.q}</div>
+                  <div style={{marginTop:3}}><SR r={q.rating}/></div>
+                </div>
+                <div style={{fontSize:".78rem",color:"rgba(255,255,255,.5)",lineHeight:1.7}}>{ai?.liuNian?.quarterly?.[i]||q.note}</div>
+              </div>)}
+            </div>
           </div>
-        </Glass>
+        </div>}
+
+        {/* ═══ TAB 1: 十年大限 ═══ */}
+        {zwTab===1&&<div style={{display:"flex",flexDirection:"column",gap:8}}>
+          <div style={{textAlign:"center",padding:"12px 0",borderBottom:"1px solid rgba(212,165,116,.08)",marginBottom:4}}>
+            <div style={{fontSize:".65rem",color:"rgba(212,165,116,.3)",letterSpacing:".2em",marginBottom:4}}>{ch.ju.name}・{gen==="male"?"陽男":"陰女"}</div>
+            <div style={{fontSize:"1.15rem",fontWeight:700,color:C.gold,letterSpacing:".15em"}}>十年大限走勢</div>
+          </div>
+          {dxList.map((dx,i)=><div key={i} style={{padding:"14px 16px",background:dx.isCur?"rgba(212,165,116,.06)":dx.isPeak?"rgba(240,192,64,.04)":"rgba(212,165,116,.02)",border:dx.isPeak?"1px solid rgba(240,192,64,.25)":dx.isCur?`1px solid rgba(212,165,116,.18)`:"1px solid rgba(212,165,116,.06)",borderRadius:8,position:"relative"}}>
+            {dx.isCur&&<div style={{position:"absolute",top:8,right:10,fontSize:".6rem",color:C.gold,background:"rgba(212,165,116,.12)",padding:"2px 8px",borderRadius:4,fontWeight:700,letterSpacing:".05em"}}>← 現在</div>}
+            {dx.isPeak&&<div style={{position:"absolute",top:8,right:10,fontSize:".6rem",color:"#1a1428",background:C.gold,padding:"2px 8px",borderRadius:4,fontWeight:700,letterSpacing:".05em"}}>★ 黃金大運</div>}
+            <div style={{display:"flex",gap:12,alignItems:"flex-start"}}>
+              <div style={{minWidth:52}}>
+                <div style={{fontSize:"1rem",fontWeight:700,color:"rgba(255,255,255,.85)"}}>{dx.sa}-{dx.ea}歲</div>
+                <div style={{fontSize:".6rem",color:"rgba(212,165,116,.35)",marginTop:2}}>{dx.sy}-{dx.ey}</div>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:".82rem",color:C.gold,fontWeight:600,marginBottom:3}}>{dx.palace}（{dx.branch}宮）</div>
+                <div style={{fontSize:".75rem",color:"rgba(130,200,160,.65)",marginBottom:4}}>{dx.stars}</div>
+                <div style={{marginBottom:6}}><SR r={dx.rating}/></div>
+                <div style={{fontSize:".78rem",color:"rgba(255,255,255,.5)",lineHeight:1.8}}>{ai?.daXian?.[i]||dx.desc}</div>
+              </div>
+            </div>
+          </div>)}
+        </div>}
+
+        {/* ═══ TAB 2: 大運何時來 ═══ */}
+        {zwTab===2&&<div style={{display:"flex",flexDirection:"column",gap:16}}>
+          <div style={{textAlign:"center",padding:"20px 0 16px",borderBottom:"1px solid rgba(212,165,116,.08)"}}>
+            <div style={{fontSize:".65rem",color:"rgba(212,165,116,.3)",letterSpacing:".2em",marginBottom:8}}>命運時間軸</div>
+            <div style={{fontSize:"1.2rem",fontWeight:700,color:C.gold,letterSpacing:".2em"}}>大運何時來？</div>
+          </div>
+          <div style={{padding:"0 8px"}}>
+            <div style={{position:"relative",paddingLeft:20}}>
+              <div style={{position:"absolute",left:6,top:0,bottom:0,width:2,background:"linear-gradient(to bottom,rgba(212,165,116,.1),rgba(212,165,116,.3),rgba(240,192,64,.7),rgba(212,165,116,.15))"}}/>
+              {timeline.map((nd,i)=><div key={i} style={{position:"relative",paddingLeft:16,paddingBottom:22,opacity:nd.isPast?.45:1}}>
+                <div style={{position:"absolute",left:-17,top:4,width:nd.isPeak||nd.isCur?14:10,height:nd.isPeak||nd.isCur?14:10,borderRadius:"50%",background:nd.dot,border:nd.isPeak?"2px solid rgba(240,192,64,.4)":"none",boxShadow:nd.isPeak?"0 0 12px rgba(240,192,64,.3)":"none"}}/>
+                <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+                  <div style={{minWidth:80}}>
+                    <div style={{fontSize:".75rem",color:nd.isPeak?"#f0c040":nd.isCur?C.gold:"rgba(212,165,116,.45)",fontWeight:600}}>{nd.year}</div>
+                    <div style={{fontSize:".6rem",color:"rgba(212,165,116,.3)"}}>{nd.age}</div>
+                  </div>
+                  <div>
+                    <div style={{fontSize:".88rem",fontWeight:700,color:nd.isPeak?"#f0c040":"rgba(255,255,255,.85)",marginBottom:3}}>{nd.label}</div>
+                    <div style={{fontSize:".75rem",color:"rgba(255,255,255,.45)",lineHeight:1.8}}>{nd.desc}</div>
+                    <div style={{marginTop:4}}><SR r={nd.rating}/></div>
+                  </div>
+                </div>
+              </div>)}
+            </div>
+          </div>
+          {/* Summary */}
+          <div style={{margin:"4px 0",padding:16,background:"rgba(240,192,64,.04)",border:"1px solid rgba(240,192,64,.15)",borderRadius:8}}>
+            <div style={{fontSize:".88rem",fontWeight:700,color:"#f0c040",marginBottom:8,letterSpacing:".05em"}}>結論</div>
+            <div style={{fontSize:".85rem",color:"rgba(255,255,255,.6)",lineHeight:2}}>
+              {ai?.peak||<>你的黃金大運在 <strong style={{color:"#f0c040"}}>{peakDx.sa}歲（{peakDx.sy}年）</strong>正式啟動。{peakDx.isCur?"恭喜你，現在就是你最好的時候！全力以赴吧。":`現在是「蓄力期」——${dxList.find(d=>d.isCur)?"當前"+dxList.find(d=>d.isCur).palace+"大限正在磨練你的實力，":""}每一步都在為未來的爆發鋪路。把專業做到極致、把人脈經營好，時候到了一切會自然匯流。`}</>}
+            </div>
+          </div>
+        </div>}
       </div>
       <style>{CSS}</style>
-    </div>);
-  }
-
-  // ── ZODIAC PAGE ──
-  if(page==="zodiac"&&soul){
-    const z=ZT[soul.zodiac]||ZT["牡羊座"];
-    const vals=[75,60,80,55,70,65].map((v,i)=>Math.max(20,Math.min(95,v+Math.round((hs(soul.bazi.ysi,v,i,1)-.5)*30))));
-    return(<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt}}><Stars/><Nav/>
-      <div style={{maxWidth:660,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
-        <PB icon="✨" title="星座解析"/>
-        <Glass style={{textAlign:"center",marginBottom:14}}>
-          <div style={{fontSize:"2.2rem",marginBottom:6,color:C.gold,textShadow:"0 0 20px rgba(212,165,116,.3)"}}>{{"火":"△","水":"▽","土":"◇","風":"○"}[z.el]||"✨"}</div>
-          <div style={{fontSize:"1.4rem",fontWeight:700,color:C.gold,marginBottom:4}}>{soul.zodiac}</div>
-          <div style={{fontSize:".78rem",color:C.txt2}}>元素：{z.el} ｜ 能量：{z.en}</div>
-        </Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 核心特質</div><div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:14}}>{z.tr.map((t,i)=><span key={i} style={{padding:"6px 16px",borderRadius:20,background:`${C.gold}11`,border:`1px solid ${C.gold}33`,fontSize:".78rem",color:C.gold}}>{t}</span>)}</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>你是擁有「{z.en}」能量的{z.el}象星座。{z.tr.join("、")}——這些天賦讓你獨特而閃耀。</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>❖ 感情解析</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt,marginBottom:10}}>{z.love}</div>{z.compat&&<div style={{fontSize:".76rem",color:C.txt2}}>最佳靈魂伴侶：{z.compat.map((c,i)=><span key={i} style={{display:"inline-block",margin:"2px 4px",padding:"3px 10px",borderRadius:12,background:`${C.rose}11`,border:`1px solid ${C.rose}33`,fontSize:".72rem",color:C.rose}}>{c}</span>)}</div>}</Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.blue,letterSpacing:".12em",marginBottom:10}}>💼 事業天賦</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{z.career}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>◇ 健康提醒</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{z.health}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.purp,letterSpacing:".12em",marginBottom:10}}>✦ 靈魂課題</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{z.sh}——擁抱它，它會成為你最大的力量。</div></Glass>
-        <Glass style={{display:"flex",justifyContent:"center",flexDirection:"column",alignItems:"center"}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 能量雷達圖</div><Radar labels={["事業","財運","感情","健康","人緣","靈性"]} values={vals} size={240}/></Glass>
-      </div><style>{CSS}</style>
-    </div>);
-  }
-
-  // ── LIFE PATH PAGE ──
-  if(page==="lifepath"&&soul){
-    const lp=soul.lpd;
-    return(<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt}}><Stars/><Nav/>
-      <div style={{maxWidth:660,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
-        <PB icon="🔮" title="生命靈數"/>
-        <Glass style={{textAlign:"center",marginBottom:14}}><div style={{fontSize:"3.5rem",fontWeight:900,background:`linear-gradient(135deg,${C.gold},${C.rose})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",marginBottom:4,lineHeight:1.2}}>{soul.lp}</div><div style={{fontSize:"1.15rem",fontWeight:700,color:C.gold,marginBottom:6}}>{lp.t}</div><div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center"}}>{lp.g.map((g,i)=><span key={i} style={{padding:"5px 14px",borderRadius:20,background:`${C.purp}15`,border:`1px solid ${C.purp}33`,fontSize:".76rem",color:C.purp}}>{g}</span>)}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 靈魂藍圖</div><div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>{lp.d}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>❖ 感情與關係</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{lp.love}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.blue,letterSpacing:".12em",marginBottom:10}}>💼 事業與財富</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{lp.career}</div></Glass>
-        <Glass><div style={{fontSize:".74rem",color:C.purp,letterSpacing:".12em",marginBottom:10}}>✦ 人生核心課題</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{lp.ch}</div></Glass>
-        <Glass style={{marginTop:14}}>
-          <div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:12}}>◎ 號碼相性</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            <div style={{padding:12,borderRadius:10,background:`${C.gold}08`}}><div style={{fontSize:".65rem",color:C.txt2,marginBottom:6}}>✅ 最合拍號碼</div><div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{(lp.best||[]).map(n=><span key={n} style={{width:30,height:30,borderRadius:15,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:".85rem",fontWeight:700,background:`${C.gold}22`,border:`1px solid ${C.gold}44`,color:C.gold}}>{n}</span>)}</div></div>
-            <div style={{padding:12,borderRadius:10,background:"rgba(176,112,128,.06)"}}><div style={{fontSize:".65rem",color:C.txt2,marginBottom:6}}>⚠️ 需注意號碼</div><div style={{display:"flex",gap:6,flexWrap:"wrap"}}>{(lp.avoid||[]).map(n=><span key={n} style={{width:30,height:30,borderRadius:15,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:".85rem",fontWeight:700,background:"rgba(176,112,128,.12)",border:"1px solid rgba(176,112,128,.3)",color:"#c08888"}}>{n}</span>)}</div></div>
-            <div style={{padding:12,borderRadius:10,background:`${C.rose}08`}}><div style={{fontSize:".65rem",color:C.txt2,marginBottom:6}}>❖ 最佳戀人號碼</div><div style={{display:"flex",alignItems:"center",gap:8}}><span style={{width:36,height:36,borderRadius:18,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",fontWeight:900,background:`${C.rose}22`,border:`1px solid ${C.rose}44`,color:C.rose}}>{lp.lover}</span><span style={{fontSize:".75rem",color:C.txt2}}>{LPD[lp.lover]?.t||""}</span></div></div>
-            <div style={{padding:12,borderRadius:10,background:`${C.blue}08`}}><div style={{fontSize:".65rem",color:C.txt2,marginBottom:6}}>⭐ 最佳貴人號碼</div><div style={{display:"flex",alignItems:"center",gap:8}}><span style={{width:36,height:36,borderRadius:18,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:"1.1rem",fontWeight:900,background:`${C.blue}18`,border:`1px solid ${C.blue}44`,color:C.blue}}>{lp.noble}</span><span style={{fontSize:".75rem",color:C.txt2}}>{LPD[lp.noble]?.t||""}</span></div></div>
-          </div>
-        </Glass>
-      </div><style>{CSS}</style>
-    </div>);
-  }
-
-  // ── HUMAN DESIGN PAGE ──
-  if(page==="humandesign"&&soul){
-    const h=soul.hd;
-    return(<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt}}><Stars/><Nav/>
-      <div style={{maxWidth:660,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
-        <PB icon="⚡" title="人類圖"/>
-        <Glass style={{textAlign:"center",marginBottom:14}}>
-          <div style={{fontSize:"2.2rem",marginBottom:8,color:C.gold,textShadow:"0 0 20px rgba(212,165,116,.3)"}}>⚡</div>
-          <div style={{fontSize:"1.3rem",fontWeight:700,color:C.gold,marginBottom:4}}>{h.type}</div>
-          <div style={{fontSize:".76rem",color:C.txt2,marginBottom:10}}>佔全球人口 {h.pct} ｜ 人生角色 {h.def}</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}>
-            <div style={{padding:8,borderRadius:8,background:`${C.gold}08`}}><div style={{fontSize:".65rem",color:C.txt2}}>策略</div><div style={{fontSize:".8rem",color:C.gold,fontWeight:600,marginTop:2}}>{h.st}</div></div>
-            <div style={{padding:8,borderRadius:8,background:`${C.rose}08`}}><div style={{fontSize:".65rem",color:C.txt2}}>正向標記</div><div style={{fontSize:".8rem",color:C.rose,fontWeight:600,marginTop:2}}>{h.sig}</div></div>
-            <div style={{padding:8,borderRadius:8,background:`${C.purp}08`}}><div style={{fontSize:".65rem",color:C.txt2}}>內在權威</div><div style={{fontSize:".8rem",color:C.purp,fontWeight:600,marginTop:2}}>{h.auth}</div></div>
-          </div>
-        </Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 你的設計</div><div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>{h.desc}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>◌ 能量運作</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{h.energy}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>✦ 生活實踐建議</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{h.tips}</div></Glass>
-        <Glass><div style={{fontSize:".74rem",color:"#c08080",letterSpacing:".12em",marginBottom:10}}>⚠️ 非自己主題：{h.notSelf}</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>當你感到「{h.notSelf}」時，代表你偏離了自己的設計。回到策略「{h.st}」，信任「{h.auth}」內在權威，讓「{h.sig}」成為你的指南針。</div></Glass>
-      </div><style>{CSS}</style>
-    </div>);
-  }
-
-  // ── MAYAN PAGE ──
-  if(page==="mayan"&&soul){
-    const m=soul.mayan;const md=m.d||{};
-    return(<div style={{minHeight:"100vh",background:C.bg,fontFamily:"'Noto Serif SC','STSong',serif",color:C.txt}}><Stars/><Nav/>
-      <div style={{maxWidth:660,margin:"0 auto",padding:"20px 16px 40px",position:"relative",zIndex:1}}>
-        <PB icon="🌀" title="瑪雅曆"/>
-        <Glass style={{textAlign:"center",marginBottom:14}}><div style={{fontSize:"2.2rem",marginBottom:8}}>🌀</div><div style={{fontSize:"1.2rem",fontWeight:700,color:C.gold}}>{m.tone} · {m.seal}</div><div style={{fontSize:".76rem",color:C.txt2,marginTop:4}}>Kin {m.kin} ｜ 調性：{m.td}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.gold,letterSpacing:".12em",marginBottom:10}}>✦ 星系印記：{md.c||""}</div><div style={{fontSize:".84rem",lineHeight:2,color:C.txt}}>你的本質是「{md.d||""}」。{md.g||""}</div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}><div style={{padding:12,borderRadius:10,background:`${C.gold}08`}}><div style={{fontSize:".68rem",color:C.txt2,marginBottom:4}}>超能力</div><div style={{fontSize:".88rem",color:C.gold,fontWeight:600}}>{md.pw||"—"}</div></div><div style={{padding:12,borderRadius:10,background:`${C.purp}08`}}><div style={{fontSize:".68rem",color:C.txt2,marginBottom:4}}>靈魂挑戰</div><div style={{fontSize:".88rem",color:C.purp,fontWeight:600}}>{md.ch||"—"}</div></div></div></Glass>
-        <Glass style={{marginBottom:14}}><div style={{fontSize:".74rem",color:C.rose,letterSpacing:".12em",marginBottom:10}}>☆ 星際支援團隊</div><div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8}}><div style={{textAlign:"center",padding:10,borderRadius:8,background:"rgba(255,255,255,.02)"}}><div style={{fontSize:".65rem",color:C.txt2}}>引導</div><div style={{fontSize:".82rem",color:C.gold,marginTop:3}}>{m.guide}</div></div><div style={{textAlign:"center",padding:10,borderRadius:8,background:"rgba(255,255,255,.02)"}}><div style={{fontSize:".65rem",color:C.txt2}}>挑戰</div><div style={{fontSize:".82rem",color:C.rose,marginTop:3}}>{m.anti}</div></div><div style={{textAlign:"center",padding:10,borderRadius:8,background:"rgba(255,255,255,.02)"}}><div style={{fontSize:".65rem",color:C.txt2}}>隱藏力量</div><div style={{fontSize:".82rem",color:C.purp,marginTop:3}}>{m.occ}</div></div></div></Glass>
-        <Glass><div style={{fontSize:".74rem",color:"#8bc8a0",letterSpacing:".12em",marginBottom:10}}>✦ 宇宙訊息</div><div style={{fontSize:".82rem",lineHeight:2,color:C.txt}}>{md.g||"跟隨你的直覺。"} 調性「{m.tone}」代表{m.td}的力量——當你與這個頻率對齊時，生命會以驚喜的方式展開。</div></Glass>
-      </div><style>{CSS}</style>
     </div>);
   }
   // ── BAZI PAGE ──
@@ -853,9 +1081,9 @@ export default function App(){
         </Glass>
         <Glass style={{marginBottom:20,padding:"24px 22px"}}>
           <div style={{fontSize:".88rem",color:C.gold,letterSpacing:".12em",marginBottom:14}}>✦ 靈魂本質光譜</div>
-          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)"}}>{ep.p1}</div>
-          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)",marginTop:14}}>{ep.p2}</div>
-          <div style={{fontSize:".92rem",lineHeight:2.1,color:"rgba(255,255,255,.85)",marginTop:14,padding:"14px 16px",borderRadius:12,background:"rgba(212,165,116,.06)",borderLeft:"3px solid rgba(212,165,116,.3)"}}>{ep.p3}</div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)"}}>{aiReading?.bazi?.personality||ep.p1}</div>
+          <div style={{fontSize:".95rem",lineHeight:2.1,color:"rgba(255,255,255,.88)",marginTop:14}}>{aiReading?.bazi?.personality?null:ep.p2}</div>
+          <div style={{fontSize:".92rem",lineHeight:2.1,color:"rgba(255,255,255,.85)",marginTop:14,padding:"14px 16px",borderRadius:12,background:"rgba(212,165,116,.06)",borderLeft:"3px solid rgba(212,165,116,.3)"}}>{aiReading?.bazi?.personality?null:ep.p3}</div>
         </Glass>
         {/* ══ 區塊二 ══ */}
         <Glass style={{marginBottom:20,padding:"24px 22px"}}>
@@ -987,4 +1215,4 @@ export default function App(){
   </div>);
 }
 
-const CSS=`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&display=swap');*{box-sizing:border-box;margin:0;padding:0}input:focus,select:focus,textarea:focus,button:focus{outline:none}button:hover{filter:brightness(1.08)}::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}::-webkit-scrollbar-thumb{background:rgba(212,165,116,.15);border-radius:2px}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes glow{0%,100%{filter:brightness(1) drop-shadow(0 0 8px rgba(212,165,116,.2))}50%{filter:brightness(1.2) drop-shadow(0 0 16px rgba(212,165,116,.4))}}@keyframes tubeshake{0%{transform:translateX(-50%) rotate(-2deg)}100%{transform:translateX(-50%) rotate(2deg)}}@keyframes stickshake{0%{transform:translateX(-50%) rotate(var(--base-angle,0deg)) translateY(0)}100%{transform:translateX(-50%) rotate(calc(var(--base-angle,0deg) + 3deg)) translateY(-6px)}}@keyframes stickrise{0%{transform:translateX(-50%) translateY(0)}30%{transform:translateX(-50%) translateY(-8px)}60%{transform:translateX(-50%) translateY(-80px)}100%{transform:translateX(-50%) translateY(-110px)}}@keyframes dotpulse{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:.8;transform:scale(1.2)}}@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}@keyframes cardShuffle{0%{transform:translateX(-30px) rotate(-8deg)}100%{transform:translateX(30px) rotate(8deg)}}@keyframes cardLift{0%{transform:translateY(0);box-shadow:0 4px 20px rgba(0,0,0,.5)}100%{transform:translateY(-40px);box-shadow:0 16px 50px rgba(180,130,180,.25),0 0 80px rgba(180,130,180,.1)}}@keyframes cardFlip{0%{transform:rotateY(0)}100%{transform:rotateY(180deg)}}@keyframes coinSpin{0%{transform:translateY(0) rotateX(0)}100%{transform:translateY(-12px) rotateX(180deg)}}select option{background:#1a1428}`;
+const CSS=`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&display=swap');*{box-sizing:border-box;margin:0;padding:0}input:focus,select:focus,textarea:focus,button:focus{outline:none}button:hover{filter:brightness(1.08)}::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:rgba(255,255,255,.02)}::-webkit-scrollbar-thumb{background:rgba(212,165,116,.15);border-radius:2px}@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}@keyframes spin{to{transform:rotate(360deg)}}@keyframes glow{0%,100%{filter:brightness(1) drop-shadow(0 0 8px rgba(212,165,116,.2))}50%{filter:brightness(1.2) drop-shadow(0 0 16px rgba(212,165,116,.4))}}@keyframes tubeshake{0%{transform:translateX(-50%) rotate(-2deg)}100%{transform:translateX(-50%) rotate(2deg)}}@keyframes stickshake{0%{transform:translateX(-50%) rotate(var(--base-angle,0deg)) translateY(0)}100%{transform:translateX(-50%) rotate(calc(var(--base-angle,0deg) + 3deg)) translateY(-6px)}}@keyframes stickrise{0%{transform:translateX(-50%) translateY(0)}30%{transform:translateX(-50%) translateY(-8px)}60%{transform:translateX(-50%) translateY(-80px)}100%{transform:translateX(-50%) translateY(-110px)}}@keyframes dotpulse{0%,100%{opacity:.2;transform:scale(.8)}50%{opacity:.8;transform:scale(1.2)}}@keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}@keyframes cardShuffle{0%{transform:translateX(-30px) rotate(-8deg)}100%{transform:translateX(30px) rotate(8deg)}}@keyframes cardLift{0%{transform:translateY(0);box-shadow:0 4px 20px rgba(0,0,0,.5)}100%{transform:translateY(-40px);box-shadow:0 16px 50px rgba(180,130,180,.25),0 0 80px rgba(180,130,180,.1)}}@keyframes cardFlip{0%{transform:rotateY(0)}100%{transform:rotateY(180deg)}}@keyframes coinSpin{0%{transform:translateY(0) rotateX(0)}100%{transform:translateY(-12px) rotateX(180deg)}}@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}select option{background:#1a1428}@keyframes nebulaSway{0%{transform:translate(0%,0%) scale(1.05) rotate(0deg)}50%{transform:translate(2%,-1.5%) scale(1.08) rotate(.5deg)}100%{transform:translate(-1%,1%) scale(1.06) rotate(-.3deg)}}@keyframes nebulaFloat1{0%{transform:translate(-3vw,-2vh) scale(1)}100%{transform:translate(4vw,3vh) scale(1.06)}}@keyframes nebulaFloat2{0%{transform:rotate(-25deg) scale(2,.6)}100%{transform:rotate(-22deg) scale(2.1,.65) translate(2vw,-1vh)}}@keyframes nebulaFloat3{0%{transform:translate(2vw,2vh) scale(1.02)}100%{transform:translate(-3vw,-2vh) scale(1)}}`;
